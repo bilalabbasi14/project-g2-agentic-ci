@@ -1,0 +1,18 @@
+{
+  "build_id": "PR-0000_build1",
+  "project": "example",
+  "budget_fraction": 0.1,
+  "budget_seconds": 120.0,
+  "diff_summary": {
+    "files": [
+      {"path": "core/src/main/java/org/example/cache/LruCache.java", "added_lines": 4, "removed_lines": 2}
+    ]
+  },
+  "candidates": [
+    {"name": "org.example.cache.LruCacheTest", "duration": 30.0, "history_score": 0.2, "tfidf_score": 0.9, "llm_relevance": 0.8, "final_score": 0.65},
+    {"name": "org.example.web.ServletTest", "duration": 100.0, "history_score": 0.0, "tfidf_score": 0.1, "llm_relevance": 0.05, "final_score": 0.02}
+  ],
+  "selected_tests": ["org.example.cache.LruCacheTest"],
+  "remaining_budget": 90.0,
+  "fallbacks": []
+}

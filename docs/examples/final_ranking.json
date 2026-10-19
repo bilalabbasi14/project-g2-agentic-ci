@@ -1,0 +1,10 @@
+{
+  "build_id": "PR-0000_build1",
+  "method": "LLM-relevance",
+  "source": "llm",
+  "budget_fraction": 0.1,
+  "ordered_tests": ["org.example.cache.LruCacheTest", "org.example.web.ServletTest"],
+  "selected_tests": ["org.example.cache.LruCacheTest"],
+  "total_duration": 30.0,
+  "scores": {"org.example.cache.LruCacheTest": 0.65, "org.example.web.ServletTest": 0.02}
+}

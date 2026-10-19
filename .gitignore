@@ -46,3 +46,22 @@ data/processed/*
 *.swp
 *.swo
 .DS_Store
+
+# Datasets, archives, clones, scratch and generated output (never committed)
+*.zip
+*.diff
+*.csv.zip
+data/lrts/
+data/dante/
+repos/
+project_repos/
+project_worktrees/
+scratch/
+handoff/
+logs/
+results/*
+!results/initial_results.csv
+!results/.gitkeep
+*.jsonl
+.env.*
+!.env.example

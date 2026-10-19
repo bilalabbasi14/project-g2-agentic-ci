@@ -1,0 +1,6 @@
+{
+  "test": "org.example.cache.LruCacheTest",
+  "relevance": 0.8,
+  "reason": "The change edits the eviction condition in LruCache, which this test exercises directly.",
+  "confidence": 0.7
+}

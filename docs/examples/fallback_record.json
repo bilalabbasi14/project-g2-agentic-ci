@@ -1,0 +1,6 @@
+{
+  "build_id": "PR-0000_build1",
+  "reason": "timeout",
+  "detail": "no response within 60 s",
+  "test": "org.example.web.ServletTest"
+}

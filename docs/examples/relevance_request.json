@@ -1,0 +1,7 @@
+{
+  "build_id": "PR-0000_build1",
+  "test": "org.example.cache.LruCacheTest",
+  "diff_chunk": "--- a/core/src/main/java/org/example/cache/LruCache.java\n+++ b/core/src/main/java/org/example/cache/LruCache.java\n-        if (size > max) evict();\n+        if (size >= max) evict();",
+  "test_source": "public class LruCacheTest {\n    @Test public void evictsOldestWhenFull() { ... }\n}",
+  "prompt_version": "v1"
+}

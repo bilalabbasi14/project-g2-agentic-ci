@@ -1,0 +1,52 @@
+# Central configuration. Paths point outside the repo; data is never committed.
+# Any value can be overridden by pointing G2_CONFIG at another YAML file.
+
+project: karaf
+
+paths:
+  # LRTS processed dataset root (contains dataset.csv, processed_test_result/, shadata/)
+  lrts_root: C:/g2w/lrts
+  # DANTE replication package (extracted subset: src/, experiments/RQ1/)
+  dante_root: C:/g2w/dante
+  # Stored DANTE-CCH / Random solution JSONs for karaf (Budget_XX_Percent/<build>/<strategy>.json)
+  dante_solutions: C:/g2w/dante/rq2_karaf
+  # Partial clone of the project repo, used only to read test sources at a build commit
+  repo_clone: C:/g2w/repos/karaf
+  repo_url: https://github.com/apache/karaf.git
+  worktree_dir: C:/g2w/wt
+  # Repo-relative paths
+  eval_builds: data_eval/eval_builds.csv
+  results_dir: results
+  logs_dir: logs
+
+# Selection budgets as a fraction of total suite duration
+budgets: [0.05, 0.10, 0.20]
+
+history:
+  num_builds: 100            # NUM_BUILDS_FOR_PROB_MODEL in DANTE experiment_config.py
+  lookback_windows: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+  min_sticky_events: 20      # MIN_STICKY_EVENTS_FOR_CONFIDENCE
+
+dante:
+  weight_history: 1.0        # WEIGHT_ULTIMATE_HISTORY
+  weight_relevance: 0.5      # WEIGHT_ULTIMATE_RELEVANCE (selection, RQ2)
+  weight_relevance_rq1: 1.0  # PRIORITIZATION_MODE_CONFIG override in run_prioritization.py (RQ1)
+  relevance_power: 1.2       # RELEVANCE_POWER
+  random_seed: 42
+
+llm:
+  provider: ollama
+  model: qwen2.5-coder:7b
+  base_url: http://localhost:11434
+  timeout_s: 60
+  temperature: 0.0
+  json_mode: true
+  max_diff_chars: 3000
+  max_test_chars: 3000
+
+shortlist:
+  k: 10                      # top-K by history score and top-K by TF-IDF score (union)
+
+fallback:
+  scope: build               # build: any failed call -> whole build uses DANTE ranking
+  min_confidence: 0.3        # responses reporting confidence below this count as low confidence

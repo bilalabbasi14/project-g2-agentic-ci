@@ -114,3 +114,21 @@ def test_history_uses_only_earlier_builds():
     assert (h['timestamp_for_sort'] < 30).all()
     assert list(history_window(meta, 50, 2)['key']) == ['d', 'e']
     assert list(previous_builds(meta, 50, 2)['key']) == ['e', 'd']
+
+
+
+def test_sticky_mode_dante_vs_per_test():
+    frames = _frames([{'A': 1, 'B': 0}, {'A': 0, 'B': 0}, {'A': 1, 'B': 0}])
+    dante = build_statistical_model(frames, [2], min_events=1, sticky_mode="dante")
+    per_test = build_statistical_model(frames, [2], min_events=1, sticky_mode="per_test")
+    assert dante['p_fail_sticky_model']['2']['events'] == 2
+    assert dante['p_fail_sticky_model']['2']['prob'] == pytest.approx(0.0)
+    assert per_test['p_fail_sticky_model']['2']['events'] == 2
+    assert per_test['p_fail_sticky_model']['2']['prob'] == pytest.approx(0.5)
+
+
+def test_sticky_modes_agree_for_a_single_test():
+    frames = _frames([{'A': o} for o in [1, 0, 1, 1, 0]])
+    dante = build_statistical_model(frames, [1, 2, 3], min_events=1, sticky_mode="dante")
+    per_test = build_statistical_model(frames, [1, 2, 3], min_events=1, sticky_mode="per_test")
+    assert dante['p_fail_sticky_model'] == per_test['p_fail_sticky_model']

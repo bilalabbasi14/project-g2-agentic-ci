@@ -133,7 +133,7 @@ tests/                 unit and end-to-end tests
   `.properties`, ...), so relevance (TF-IDF or LLM) has no input there. The LLM run
   uses the 13 builds with code changes; results on them do not describe the other 37.
 - In the shipped DANTE code, relevance is read under the key `"bm25"` but stored
-  under `"tfidf"`, so the stored DANTE-CCH results rank on history only. We report
+  under `"tfidf"`, so the stored DANTE-CCH results appear to rank on history only. We report
   both the shipped behaviour and TF-IDF-on. Details: `docs/dante_notes.md`.
 - In the shipped DANTE code, the sticky-failure window rolls over consecutive rows
   of all tests, not over each test's own history; we reproduce it as written.
@@ -146,6 +146,7 @@ tests/                 unit and end-to-end tests
   changes are truncated. Mean call latency on this laptop was 39.1 s.
 - SAPFDc and SDS are named in the DANTE package but not implemented there; our
   definitions are stated above.
+- The LLM gave a relevance of 0.2 or lower to 143 of the 152 tests it scored (94%); only 9 scored 0.8 or higher. It scored only the 13-20 shortlisted tests per build, so in this run LLM-relevance mostly follows the history ranking.
 
 ## Credits
 
@@ -155,3 +156,4 @@ tests/                 unit and end-to-end tests
   original functions.
 - LRTS (Long Running Test Suites) dataset, https://ieeexplore.ieee.org/document/10044820.
 - Apache Karaf, https://github.com/apache/karaf.
+- R. Cheng, S. Wang, R. Jabbarvand and D. Marinov, "Revisiting test-case prioritization on long-running test suites", ISSTA 2024; artifact: https://doi.org/10.5281/zenodo.12662090.

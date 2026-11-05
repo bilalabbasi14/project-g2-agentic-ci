@@ -16,6 +16,24 @@ judgement of relevance finds more failures within the same budget. It does not
 assume the answer. Phase 1 builds the pipeline, reproduces the DANTE baseline and
 reports an **initial run on few builds; no conclusion is drawn from it**.
 
+## Development workflow (Phase 2)
+
+One-time setup on each laptop:
+
+```
+gh auth login
+gh repo clone bilalabbasi14/project-g2-agentic-ci
+cd project-g2-agentic-ci
+git config user.name  "<your real name>"
+git config user.email "<the email of your GitHub account>"
+git config core.hooksPath .githooks
+git config core.longpaths true
+```
+
+All changes go through pull requests; see docs/PROJECT_CONTEXT.md §11.
+
+Run the tests with `python -m pytest`.
+
 ## Initial results (Phase 1)
 
 **Initial run on 13 karaf builds, one model; no conclusion is drawn.** The 13

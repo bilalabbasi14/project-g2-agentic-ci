@@ -1,0 +1,11 @@
+#!/bin/sh
+# Blocks direct pushes to main. Open a pull request instead.
+while read local_ref local_sha remote_ref remote_sha
+do
+  if [ "$remote_ref" = "refs/heads/main" ]; then
+    echo "ERROR: direct pushes to main are blocked."
+    echo "Create a branch (p2-NN-short-name), push it, and open a pull request."
+    exit 1
+  fi
+done
+exit 0

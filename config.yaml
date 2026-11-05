@@ -50,3 +50,45 @@ shortlist:
 fallback:
   scope: build               # build: any failed call -> whole build uses DANTE ranking
   min_confidence: 0.3        # responses reporting confidence below this count as low confidence
+
+# ---------------- Phase 2 ----------------
+eval:
+  eval_set: data_eval/eval_builds_p2.csv   # written by P2-08
+  seeds: [1, 2, 3]
+  explainer_seeds: [1]                     # explainer runs only for these seeds
+llm_p2:
+  seed: 1                                  # default; runs override with --seed
+  num_ctx: 8192                            # context window per call (single-call uses its own)
+  max_retries: 1                           # one retry after timeout / invalid output
+  cache: true
+  cache_dir: cache/llm
+  relevance_prompt_version: v1             # P2-07 may change this to v2 (decided on dev split)
+orchestrator:
+  max_tool_calls: 4
+  min_confidence: 0.3
+  fallback_w: 0.6666667
+  observation_max_chars: 1500
+  prompt_version: o1
+explainer:
+  top_n_skipped: 5
+  candidate_pool: 20
+  max_justification_chars: 400
+  max_changed_files: 10
+  prompt_version: e1
+single_call:
+  max_tests: 400
+  max_diff_chars: 3000
+  num_ctx: 16384
+  prompt_version: sc1
+tuning:
+  w_grid: [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.6666667, 0.7, 0.8, 0.9, 1.0]
+  objective_budget: 0.10                   # maximise mean SAPFDc at this budget on the dev split
+  tuned_weights_file: experiments/tuned_weights.yaml
+ablation:
+  no_shortlist_builds: 20                  # size of the test-split sample for the no-shortlist ablation
+  no_shortlist_seed: 1
+trace:
+  dir: logs/traces
+  max_text_chars: 8000
+paths_p2:
+  source_cache: C:/g2w/source_cache        # written by P2-09; personal path, override with G2_CONFIG

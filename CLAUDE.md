@@ -10,7 +10,7 @@ The full project description is in `docs/PROJECT_CONTEXT.md`. **Read it at the s
 
 1. **Never commit to `main` and never push to `main`.** All work happens on a branch named `p2-<NN>-<short-name>` and reaches `main` only through a pull request. If the current branch is `main` when you are about to commit, stop, tell the user, and create the correct branch first.
 2. **Never bypass the pre-push hook** (no `git push --no-verify`, no changing `core.hooksPath`).
-3. **Never merge a pull request** unless the user, in this session, explicitly says "merge PR #N". Approving is not merging.
+3. **Never merge a pull request** unless the user, in this session, explicitly says "merge PR #N", the user is not the PR's author, and the PR has an approval from someone other than its author. Ali or Bilal may merge: the approving reviewer merges, and nobody merges their own PR. Approving is not merging.
 4. **Never force-push, delete branches, close or delete issues, rewrite history, or delete files you did not create**, unless the user explicitly asks in this session. Ask first for anything destructive.
 5. **No attribution lines.** Commit messages, PR titles, PR descriptions, review comments and issue comments must not contain `Co-authored-by:` lines, "Generated with …", or any mention of the tool that produced them. Write commit messages as one short imperative summary line, a blank line, and a few lines explaining what and why.
 6. **Use the logged-in user's identity only.** Do not change `git config user.name` / `user.email`, and never use a token belonging to someone else.
@@ -128,7 +128,7 @@ Post it with:
 gh pr review <PR> --approve --body-file review.md
 gh pr review <PR> --request-changes --body-file review.md
 ```
-(Choose the one that matches the decision.) Approve **only** when there are no blocking problems. Then tell the user the decision and stop. **Do not merge.**
+(Choose the one that matches the decision.) Approve **only** when there are no blocking problems. Then tell the user the decision and stop. **Do not merge** unless the user then explicitly says "merge PR #N", the user is not the PR's author, and the PR has an approval from someone other than its author (Part D).
 
 ### C5. Re-review
 
@@ -136,9 +136,12 @@ When the author pushes fixes, repeat C1–C4, focusing on the previous blocking 
 
 ---
 
-## Part D — Merging (Ali only, on explicit instruction)
+## Part D — Merging (approving reviewer, on explicit instruction)
 
-Merge only when the user says "merge PR #N" **and** all of the following hold:
+The reviewer who approves a PR merges it. Ali or Bilal may merge; nobody merges their own PR.
+
+Merge only when the user explicitly says "merge PR #N" **and** all of the following hold:
+- the user is not the PR's author;
 - an approving review from someone other than the author;
 - CI green on the latest commit;
 - the branch is up to date with `main`, or merges without conflicts.

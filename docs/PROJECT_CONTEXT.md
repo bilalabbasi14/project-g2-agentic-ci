@@ -384,7 +384,7 @@ README.md                          final rewrite in P2-20                       
 6. Before opening the PR: `git fetch origin`, then `git rebase origin/main` (or merge `main` into your branch) and fix any conflicts; run `python -m pytest`; all tests must pass.
 7. Push the branch: `git push -u origin p2-06-orchestrator`.
 8. Open a PR into `main`. The title is `[P2-06] <issue title>`. The description follows the template: `Closes #<issue number>`, what changed, how it was tested, the acceptance criteria ticked one by one, known limitations, and a devlog entry if the issue asks for one.
-9. A reviewer (Ali or Bilal; never the author) reviews. **Only Ali merges**, and only after an approval and green CI.
+9. A reviewer (Ali or Bilal; never the author) reviews. **The reviewer who approves the PR merges it** (Ali or Bilal; nobody merges their own PR), only when the user explicitly says "merge PR #N", only if the user is not the PR's author, and only after an approval from someone other than the author and green CI.
 10. After the merge: `git checkout main`, then `git pull`, then delete your local branch.
 
 ---

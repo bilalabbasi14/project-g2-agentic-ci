@@ -51,3 +51,42 @@ Test sources are read with `git ls-tree` / `git cat-file` at each build commit; 
 ## Generated files
 
 - `data_eval/eval_builds.csv` — `python -m src.data.make_eval_builds`
+
+## Phase 2: getting the data
+
+The input data is shared as a **private Kaggle dataset** `g2-karaf-data` (owner: Ali; Bilal and Taha are collaborators). It contains:
+
+```
+g2-karaf-data/
+  lrts/dataset.csv
+  lrts/processed_test_result/karaf/<pr_name>_build<id>/stage_single/test_class.csv.zip
+  lrts/shadata/karaf/diff/<pr_name>_build<id>.diff
+  dante/experiments/RQ1/*.csv
+  dante/rq2_karaf/Budget_05_Percent/<build>/{DANTE-CCH,Random}.json
+  dante/rq2_karaf/Budget_10_Percent/...
+  dante/rq2_karaf/Budget_20_Percent/...
+  README.txt
+```
+
+Do not redistribute it publicly.
+
+1. **Download to a laptop.** Either open the dataset page on kaggle.com and click *Download*, or install the client (`python -m pip install kaggle`), place your API token at `~/.kaggle/kaggle.json` (Kaggle → *Settings* → *Create New Token*; never commit it) and run
+   `kaggle datasets download <KAGGLE_OWNER>/g2-karaf-data` (**placeholder: Ali's Kaggle username, to be filled in**).
+2. **Unzip** to a short path, for example `C:/g2w/`, so that you get `C:/g2w/g2-karaf-data/lrts/...` and `C:/g2w/g2-karaf-data/dante/...` (short paths avoid the Windows 260-character limit).
+3. **Point the config at it** without editing the committed `config.yaml`: copy it to a personal file (for example `config_local.yaml`, not committed) and set
+   - `paths.lrts_root` -> `<unzip folder>/g2-karaf-data/lrts`
+   - `paths.dante_root` -> `<unzip folder>/g2-karaf-data/dante`
+   - `paths.dante_solutions` -> `<unzip folder>/g2-karaf-data/dante/rq2_karaf`
+
+   then select it with the `G2_CONFIG` environment variable (see `.env.example`), e.g. PowerShell `$env:G2_CONFIG="config_local.yaml"`, bash `export G2_CONFIG=config_local.yaml`.
+4. **On Kaggle**, attach the dataset to the notebook (*Add Input* → *Your Datasets* → `g2-karaf-data`). It is mounted at:
+   `KAGGLE_MOUNT_PATH_PLACEHOLDER` (**placeholder: to be replaced with the real path from `!ls /kaggle/input` once the dataset exists; Kaggle may unpack the zip one level deeper**).
+5. **Check the data**:
+   ```
+   python -m src.data.check_data
+   ```
+   or with explicit folders:
+   ```
+   python -m src.data.check_data --lrts <lrts_root> --dante <dante_root> --solutions <dante_solutions>
+   ```
+   Every line must say `OK` (726 karaf builds with test results and diffs, 50 distinct builds in `RQ1/karaf.csv`, 50 build folders with `DANTE-CCH.json` and `Random.json` per budget); the exit code is 0 only then.

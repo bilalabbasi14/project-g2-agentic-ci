@@ -3,14 +3,13 @@
 Layout (checked on the extracted dataset; there is no "artifact/" folder):
     <lrts_root>/dataset.csv
     <lrts_root>/processed_test_result/<project>/<pr_name>_build<id>/stage_<stage>/test_class.csv.zip
+        (the Kaggle copy has the extracted stage_<stage>/test_class.csv instead; both are read)
     <lrts_root>/shadata/<project>/diff/<pr_name>_build<id>.diff
 test_class.csv columns: testclass, duration, outcome (1 = fail), last_outcome.
 LRTS has no per-test flaky label in these files.
 """
-import io
 import os
 import re
-import zipfile
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional
 
@@ -19,6 +18,7 @@ import pandas as pd
 from src.dante.tokenize import clean_and_tokenize_source, find_test_source_path
 from src.data.splitter import history_window, previous_builds
 from src.tools.diff_reader import split_diff
+from src.tools.history_retrieval import open_test_class_csv, resolve_test_class_file
 
 STORED_NAME = re.compile(r"(?P<project>[\w-]+?)_build_(?P<pr>.+)_(?P<bid>\d+)_(?P<stage>[^_]+)_"
                          r"(?P<strategy>tfidf|bm25)_(?P<tok>specific|generic)_boosted_(?P<boost>True|False)")
@@ -118,13 +118,12 @@ class LRTSLoader:
         (_load_single_test_class_zip in run_selection.py). None if missing."""
         key = row.name
         if key not in self._cache:
-            path = self.test_class_path(row)
+            # the .zip, or the extracted test_class.csv that Kaggle serves instead
+            path = resolve_test_class_file(self.test_class_path(row))
             df = None
-            if os.path.exists(path):
-                with zipfile.ZipFile(path) as z:
-                    name = [n for n in z.namelist() if n.lower().endswith("test_class.csv")][0]
-                    with z.open(name) as fh:
-                        df = pd.read_csv(io.TextIOWrapper(fh, "utf-8"))
+            if path:
+                with open_test_class_csv(path) as fh:
+                    df = pd.read_csv(fh)
                 df['build_index'] = row.name
             self._cache[key] = df
         return self._cache[key]

@@ -13,6 +13,7 @@ import sys
 
 from src.data.loader import build_key
 from src.settings import load_config
+from src.tools.history_retrieval import resolve_test_class_file
 
 BUDGET_DIRS = ("Budget_05_Percent", "Budget_10_Percent", "Budget_20_Percent")
 STRATEGIES = ("DANTE-CCH", "Random")
@@ -36,7 +37,8 @@ def check(lrts_root, dante_root, solutions_root, expected_builds=726, expected_e
     """Return one (name, passed, detail) tuple per check.
 
     Checks: dataset.csv has `expected_builds` rows of the project; each of those
-    builds has its test_class.csv.zip and its .diff; DANTE's RQ1 CSV for the
+    builds has its test results (test_class.csv.zip, or the extracted
+    test_class.csv Kaggle serves) and its .diff; DANTE's RQ1 CSV for the
     project lists `expected_eval_builds` distinct builds; each stored-solution
     budget folder has that many build folders, each with DANTE-CCH.json and
     Random.json. A missing file gives a detail starting with "missing".
@@ -55,12 +57,20 @@ def check(lrts_root, dante_root, solutions_root, expected_builds=726, expected_e
     zips = [os.path.join(lrts_root, "processed_test_result", project, build_key(pr, bid), f"stage_{st}",
                          "test_class.csv.zip") for pr, bid, st in builds]
     diffs = [os.path.join(lrts_root, "shadata", project, "diff", f"{k}.diff") for k in keys]
-    for name, paths in (("test_class.csv.zip per build", zips), (".diff per build", diffs)):
+    for name, paths in (("test results per build", zips), (".diff per build", diffs)):
         if not builds:
             results.append((name, False, "missing: no builds to check (dataset.csv missing or empty)"))
             continue
-        missing = [k for k, p in zip(keys, paths) if not os.path.isfile(p)]
-        detail = f"{len(keys) - len(missing)} of {len(keys)} found"
+        if name == "test results per build":
+            # the original .zip, or the extracted test_class.csv that Kaggle serves
+            found = [resolve_test_class_file(p) for p in paths]
+            missing = [k for k, f in zip(keys, found) if f is None]
+            n_csv = sum(1 for f in found if f and not f.lower().endswith(".zip"))
+            form = f" ({len(keys) - len(missing) - n_csv} test_class.csv.zip, {n_csv} extracted test_class.csv)"
+        else:
+            missing = [k for k, p in zip(keys, paths) if not os.path.isfile(p)]
+            form = ""
+        detail = f"{len(keys) - len(missing)} of {len(keys)} found{form}"
         results.append((name, not missing, detail + (f"; missing: {_listed(missing)}" if missing else "")))
 
     rq1 = os.path.join(dante_root, "experiments", "RQ1", f"{project}.csv")

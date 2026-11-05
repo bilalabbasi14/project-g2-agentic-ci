@@ -52,7 +52,7 @@ def test_missing_diff_fails_and_names_build(tmp_path):
     assert not passed
     assert "PR-2_build3" in detail and "1 of 2 found" in detail
     assert status_word(passed, detail) == "MISSING"
-    assert res["test_class.csv.zip per build"][0]
+    assert res["test results per build"][0]
 
 
 def test_wrong_counts_and_missing_json(tmp_path):
@@ -79,3 +79,15 @@ def test_main_exit_code(tmp_path, capsys):
     assert main(["--lrts", str(lrts), "--dante", str(dante), "--solutions", str(sol)]) == 1
     out = capsys.readouterr().out
     assert "WRONG" in out and "some checks failed" in out
+
+
+def test_extracted_layout_passes(tmp_path):
+    """Kaggle serves the test results extracted: stage_single/test_class.csv instead of the .zip."""
+    lrts, dante, sol = _tree(tmp_path)
+    for z in (lrts / "processed_test_result").rglob("test_class.csv.zip"):
+        z.unlink()
+        (z.parent / "test_class.csv").write_text("testclass,duration,outcome,last_outcome\n")
+    res = {name: (passed, detail) for name, passed, detail in
+           check(str(lrts), str(dante), str(sol), expected_builds=2, expected_eval_builds=2)}
+    assert all(p for p, _ in res.values()), res
+    assert res["test results per build"][1] == "2 of 2 found (0 test_class.csv.zip, 2 extracted test_class.csv)"

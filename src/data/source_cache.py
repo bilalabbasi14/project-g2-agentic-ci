@@ -13,7 +13,8 @@ the git clone (`LRTSLoader.build(row, keep_sources=True)`) and writes
 with one entry for every test case whose source path was found. Existing files
 are skipped unless --force is given (resumable). LRTSLoader(source_cache_dir=...)
 reads these files instead of git and produces the same BuildData. Because
-Kaggle may unpack .gz files on upload, a plain `<build_key>.json` is read too.
+Kaggle may unpack compressed files on upload, a plain `<build_key>.json` and a
+folder `<build_key>.json.gz/` holding the JSON are read too (see cache_file).
 
 --check K loads the first K builds once through git and once through the
 cache and prints whether the BuildData are identical.
@@ -39,19 +40,36 @@ def cache_dir_from_config(cfg):
 
 
 def cache_file(cache_dir, build_key):
-    """The existing cache file of a build (.json.gz, else .json), or None."""
+    """The cache file of a build, or None. Accepted forms, in this order:
+    `<key>.json.gz` (as written), `<key>.json` (unpacked by Kaggle), and a folder
+    `<key>.json.gz/` holding the unpacked JSON (another way Kaggle unpacks uploads)."""
     if cache_dir is None:
         return None
+    base = Path(cache_dir)
     for name in (f"{build_key}.json.gz", f"{build_key}.json"):
-        p = Path(cache_dir) / name
+        p = base / name
         if p.is_file():
             return p
+    folder = base / f"{build_key}.json.gz"
+    if folder.is_dir():
+        inside = folder / f"{build_key}.json"
+        if inside.is_file():
+            return inside
+        files = sorted(p for p in folder.iterdir() if p.is_file())
+        if len(files) == 1:
+            return files[0]
     return None
 
 
+GZIP_MAGIC = b"\x1f\x8b"
+
+
 def read_cache(path):
+    """Read a cache file; gzip is recognised by its content, not its name."""
     path = Path(path)
-    if path.suffix == ".gz":
+    with open(path, "rb") as f:
+        gzipped = f.read(2) == GZIP_MAGIC
+    if gzipped:
         with gzip.open(path, "rt", encoding="utf-8") as f:
             return json.load(f)
     with open(path, "r", encoding="utf-8") as f:

@@ -1,0 +1,22 @@
+{
+  "build_id": "PR-0000_build1",
+  "w": 0.45,
+  "confidence": 0.7,
+  "source": "agent",
+  "reason": "The change touches the cache module and two shortlisted cache tests have high relevance but no recent failures.",
+  "steps": 2,
+  "tool_calls": [
+    {
+      "tool": "history_retrieval",
+      "args": {"test": "org.example.cache.LruCacheTest"},
+      "output": {"test": "org.example.cache.LruCacheTest", "history_builds": 100, "runs": 98, "failures": 0,
+                 "failure_rate": 0.0, "last_failure_distance": null, "recent_outcomes": [0, 0, 0]},
+      "latency_s": 0.002,
+      "ok": true,
+      "error": null
+    }
+  ],
+  "llm_calls": 2,
+  "fallback": null,
+  "prompt_version": "o1"
+}

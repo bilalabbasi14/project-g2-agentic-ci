@@ -1,11 +1,15 @@
 from .models import (
-    FALLBACK_REASONS, RANKING_SOURCES, BuildState, CandidateTest, ChangedFile, DiffSummary,
-    FallbackRecord, FinalRanking, LLMCallRecord, RelevanceRequest, RelevanceResponse,
+    DANTE_W, FALLBACK_REASONS, RANKING_SOURCES, RELEVANCE_SOURCES, TRACE_COMPONENTS, TRACE_EVENTS,
+    WEIGHT_MODES, BuildState, CandidateTest, ChangedFile, DiffSummary, ExplanationRecord,
+    FallbackRecord, FinalRanking, LLMCallRecord, MethodSpec, OrchestratorDecision, OrchestratorInput,
+    RelevanceRequest, RelevanceResponse, ToolCallRecord, TraceEvent,
 )
 from .schemas import SCHEMAS, validate
 
 __all__ = [
-    "FALLBACK_REASONS", "RANKING_SOURCES", "BuildState", "CandidateTest", "ChangedFile",
-    "DiffSummary", "FallbackRecord", "FinalRanking", "LLMCallRecord", "RelevanceRequest",
-    "RelevanceResponse", "SCHEMAS", "validate",
+    "DANTE_W", "FALLBACK_REASONS", "RANKING_SOURCES", "RELEVANCE_SOURCES", "TRACE_COMPONENTS",
+    "TRACE_EVENTS", "WEIGHT_MODES", "BuildState", "CandidateTest", "ChangedFile", "DiffSummary",
+    "ExplanationRecord", "FallbackRecord", "FinalRanking", "LLMCallRecord", "MethodSpec",
+    "OrchestratorDecision", "OrchestratorInput", "RelevanceRequest", "RelevanceResponse",
+    "ToolCallRecord", "TraceEvent", "SCHEMAS", "validate",
 ]

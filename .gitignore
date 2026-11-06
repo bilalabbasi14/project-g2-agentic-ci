@@ -69,11 +69,22 @@ results/*
 # --- Phase 2 ---
 cache/
 source_cache/
-results/**/runs/
+# results/ is an allow-list (git uses the last matching rule): first-level
+# folders are opened, everything inside them is ignored, then only the listed
+# files are allowed back. Full run JSONs in runs/ are never committed.
 !results/*/
-!results/**/*.csv
-!results/**/*.md
-!results/**/run_meta.json
+results/*/*
+!results/*/*.csv
+!results/*/*.md
+!results/*/run_meta.json
 !results/figures/*.png
+!results/tables/*
+!results/stats/*
+!results/analysis/*
+!results/tuning/*
+!results/dev/*
+!results/gap2/*
+results/runs/
+results/*/runs/
 !logs_sample/
 !logs_sample/**

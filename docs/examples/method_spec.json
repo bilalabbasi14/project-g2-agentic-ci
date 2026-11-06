@@ -1,0 +1,8 @@
+{
+  "name": "Agent-weighted",
+  "relevance_source": "llm_shortlist",
+  "weight_mode": "agent",
+  "w": null,
+  "tuned_key": null,
+  "explainer": false
+}

@@ -1,0 +1,25 @@
+{
+  "build_id": "PR-0000_build1",
+  "budget_fraction": 0.1,
+  "test": "org.example.web.ServletTest",
+  "rank_by_value": 3,
+  "evidence": {
+    "test": "org.example.web.ServletTest",
+    "rank_by_value": 3,
+    "history": {"runs": 98, "failures": 0, "failure_rate": 0.0},
+    "relevance_used": 0.05,
+    "duration_s": 100.0,
+    "budget_s": 120.0,
+    "remaining_budget_at_turn_s": 90.0,
+    "skip_cause": "did_not_fit",
+    "fits_if_budget_s": 130.0
+  },
+  "justification": "Skipping it was reasonable: it never failed in 98 runs, its relevance to the change is low (0.05), and its 100 s run did not fit the 90 s left.",
+  "cited_facts": ["failures: 0 of 98 runs", "relevance_used: 0.05", "duration_s: 100.0", "remaining_budget_at_turn_s: 90.0"],
+  "ok": true,
+  "error": null,
+  "latency_s": 3.1,
+  "prompt_tokens": 850,
+  "completion_tokens": 70,
+  "prompt_version": "e1"
+}

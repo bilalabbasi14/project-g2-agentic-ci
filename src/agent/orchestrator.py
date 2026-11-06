@@ -81,6 +81,8 @@ To give the final answer:
 confidence (0 to 1) is how sure you are that your w is better than 0.67. reason is one short sentence.{forced}"""
 
 FORCED_FINAL = "\n\nTool limit reached. You must now give the final answer."
+# forced before max_tool_calls tools were used, because only max_tool_calls + 2 LLM calls are allowed
+FORCED_FINAL_CALLS = "\n\nCall limit reached. You must now give the final answer."
 
 
 def _mean(values):
@@ -218,7 +220,7 @@ class LLMOrchestrator:
         """Hard safety limit per decision, whatever the model answers."""
         return self.max_tool_calls + 2
 
-    def build_prompt(self, inp, specs, observations, tools_used, forced=False):
+    def build_prompt(self, inp, specs, observations, tools_used, forced=False, forced_text=FORCED_FINAL):
         feats = "\n".join(f"- {k} = {inp.features.get(k, 0.0):g}: {doc}" for k, doc in FEATURE_DOCS.items())
         rows = "\n".join(f"- {s['test']} | {_fmt(s['history_score'])} | {_fmt(s['tfidf_relevance'])} | "
                          f"{_fmt(s['llm_relevance'])} | {s['duration']:g}" for s in inp.shortlist) or "(none)"
@@ -230,7 +232,7 @@ class LLMOrchestrator:
             relevance_source=inp.relevance_source, features=feats, n_files=len(inp.changed_files),
             files=files, shortlist=rows, max_tools=self.max_tool_calls,
             tools_left=0 if forced else max(self.max_tool_calls - tools_used, 0), tools=tools, observations=obs,
-            forced=FORCED_FINAL if forced else "")
+            forced=forced_text if forced else "")
 
     def _observation(self, n, rec):
         if rec.ok:
@@ -249,8 +251,10 @@ class LLMOrchestrator:
         llm_calls = 0
         while True:
             remaining = self.max_llm_calls - llm_calls
-            forced = len(tool_calls) >= self.max_tool_calls or remaining <= 2
-            prompt = self.build_prompt(inp, specs, observations, len(tool_calls), forced)
+            tool_limit = len(tool_calls) >= self.max_tool_calls
+            forced = tool_limit or remaining <= 2
+            prompt = self.build_prompt(inp, specs, observations, len(tool_calls), forced,
+                                       FORCED_FINAL if tool_limit else FORCED_FINAL_CALLS)
             traced = _TracedProvider(self, bid, llm_calls + 1)
             step, reason, detail, attempts = complete_and_parse(
                 traced, prompt, lambda text, f=forced: parse_step(text, final_only=f),

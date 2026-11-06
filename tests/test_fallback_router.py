@@ -74,3 +74,37 @@ def test_test_scope_keeps_other_scores():
 def test_bad_scope():
     with pytest.raises(ValueError):
         FallbackRouter(None, scope="x")
+
+
+def test_retry_once_avoids_fallback(caplog):
+    r = FallbackRouter(SemanticAnalyzer(MockProvider([ok("t.A"), "not json", ok("t.B", 0.7)])),
+                       min_confidence=0.3, scope="build", max_retries=1)
+    res = r.run("b1", reqs("t.A", "t.B"), DANTE)
+    assert res.source == "llm" and not res.fallbacks
+    assert res.relevance == {"t.A": 0.5, "t.B": 0.7}
+    assert len(r.analyzer.provider.prompts) == 3
+
+
+def test_two_bad_answers_fall_back_after_retry(caplog):
+    r = FallbackRouter(SemanticAnalyzer(MockProvider([ok("t.A"), "not json", "still not json"])),
+                       min_confidence=0.3, scope="build", max_retries=1)
+    with caplog.at_level(logging.WARNING):
+        res = r.run("b1", reqs("t.A", "t.B", "t.C"), DANTE)
+    assert res.fell_back and [f.reason for f in res.fallbacks] == ["invalid_json"]
+    assert len(r.analyzer.provider.prompts) == 3
+    assert any("attempts=2" in m for m in caplog.messages)
+
+
+def test_low_confidence_is_not_retried():
+    r = FallbackRouter(SemanticAnalyzer(MockProvider([ok("t.A", conf=0.1), ok("t.A")])),
+                       min_confidence=0.3, scope="build", max_retries=1)
+    res = r.run("b1", reqs("t.A"), DANTE)
+    assert [f.reason for f in res.fallbacks] == ["low_confidence"]
+    assert len(r.analyzer.provider.prompts) == 1
+
+
+def test_from_config_uses_llm_p2_max_retries():
+    from src.settings import load_config
+    cfg = load_config()
+    r = FallbackRouter.from_config(SemanticAnalyzer(MockProvider(["x"])), cfg)
+    assert r.max_retries == cfg["llm_p2"]["max_retries"] == 1

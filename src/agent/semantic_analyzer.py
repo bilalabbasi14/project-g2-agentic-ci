@@ -115,3 +115,10 @@ class SemanticAnalyzer:
     def analyze(self, request):
         text = self.provider.complete(build_prompt(request), json_mode=True)
         return parse_response(text, request.test)
+
+    def analyze_with_retry(self, request, max_retries=1):
+        """Like analyze, but retries a failed call; returns
+        (RelevanceResponse or None, fallback reason, detail, attempts)."""
+        from src.agent.retry import complete_and_parse
+        return complete_and_parse(self.provider, build_prompt(request),
+                                  lambda text: parse_response(text, request.test), max_retries)

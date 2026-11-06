@@ -195,3 +195,17 @@ def test_notebook_clone_cell_fails_loudly_and_hides_the_token():
     assert "finally:" in clone and "set-url" in clone and "PUBLIC_URL" in clone   # remote reset in all cases
     assert "del _token, _url" in clone
     assert "ghp_" not in clone and "github_pat_" not in clone
+
+
+def test_rerun_removes_the_stale_trace(tmp_path):
+    cfg = _cfg(tmp_path)
+    stale = tmp_path / "traces" / "DEV_dev_seed1" / f"{KEYS[0]}.jsonl"
+    stale.parent.mkdir(parents=True)
+    stale.write_text('{"stale": true}\n', encoding="utf-8")
+    lines = []
+    main(["--exp", "DEV", "--seed", "1", "--provider", "mock", "--methods", "LLM-relevance",
+          "--build-limit", "1", "--skip-existing"], cfg=cfg, loader=KeyedLoader(), echo=lines.append)
+    events = [json.loads(x) for x in stale.read_text(encoding="utf-8").splitlines()]
+    assert events and all("stale" not in e for e in events)
+    assert events[0]["step"] == 1                                   # one clean trajectory from step 1
+    assert any(ln.startswith("removed stale trace") for ln in lines)

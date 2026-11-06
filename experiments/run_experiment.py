@@ -186,6 +186,13 @@ def main(argv=None, cfg=None, loader=None, echo=print):
         rows = keep
         for r in skipped:
             echo(f"skip {r.key} (runs/{r.key}.json exists)")
+    for r in rows:
+        # a build that runs (again) starts with an empty trace file, so each build
+        # has one clean trajectory even after an interrupted earlier attempt
+        stale = trace.path(r.key)
+        if stale.exists():
+            stale.unlink()
+            echo(f"removed stale trace {stale.name}")
     comps = make_components(cfg, specs, args.provider, args.base_url, args.seed, trace)
     loader = loader or make_loader(cfg)
 

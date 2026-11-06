@@ -209,7 +209,7 @@ Relevance sources:
 
 - **Pool:** all 726 Karaf builds in LRTS.
 - **A build qualifies if:** it has at least 100 earlier builds (full history window); its diff changes at least one code file DANTE keeps; it has at least one failing candidate test; and its test sources can be read.
-- **Selection:** if more than 120 qualify, take 120 builds evenly spaced in time. **Split chronologically:** the earliest 20 are `dev`, the next 100 are `test`. If fewer than 60 qualify, stop and report to the group before doing anything else.
+- **Selection:** all qualifying builds (54 at the time of writing): **split chronologically**, the earliest 10 are `dev`, the remaining 44 are `test`. The rule was fixed before any results were seen. (Only if more than 160 builds qualified would 160 be pre-selected evenly spaced in time before the source check; with 54 this does not apply.) The group chose this over loosening the filters on 6 November 2026; see `docs/devlog/2026-11-06-ali-eval-set-size.md`.
 - **The file `data_eval/eval_builds_p2.csv` is the single source of truth.** Nobody edits it by hand after it is merged.
 - The 50 Phase 1 builds stay in `data_eval/eval_builds.csv` and are still used for the stored-DANTE comparison (E2).
 
@@ -248,7 +248,7 @@ Relevance sources:
 
 ## 8. Experiments (E1–E6)
 
-All final results use the **test split** (100 builds), budgets 5/10/20%, and seeds 1–3 unless stated otherwise. Results for each build and seed are stored, then averaged over seeds per build before statistics.
+All final results use the **test split** (all test-split builds, 44), budgets 5/10/20%, and seeds 1–3 unless stated otherwise. Results for each build and seed are stored, then averaged over seeds per build before statistics.
 
 | ID | What it shows | Methods | Notes |
 |---|---|---|---|

@@ -91,3 +91,16 @@ def test_extracted_layout_passes(tmp_path):
            check(str(lrts), str(dante), str(sol), expected_builds=2, expected_eval_builds=2)}
     assert all(p for p, _ in res.values()), res
     assert res["test results per build"][1] == "2 of 2 found (0 test_class.csv.zip, 2 extracted test_class.csv)"
+
+
+def test_rq1_without_build_column_is_wrong_not_a_crash(tmp_path):
+    lrts, dante, sol = _tree(tmp_path)
+    (dante / "experiments" / "RQ1" / "karaf.csv").write_text("name,method,apfdc\nx,DANTE-CCH,0.5\n")
+    res = {name: (passed, detail) for name, passed, detail in
+           check(str(lrts), str(dante), str(sol), expected_builds=2, expected_eval_builds=2)}
+    passed, detail = res["RQ1/karaf.csv"]
+    assert not passed and "no 'build' column" in detail
+    assert status_word(passed, detail) == "WRONG"
+    (dante / "experiments" / "RQ1" / "karaf.csv").write_text("")
+    passed, detail = {n: (p, d) for n, p, d in check(str(lrts), str(dante), str(sol), 2, 2)}["RQ1/karaf.csv"]
+    assert not passed and status_word(passed, detail) == "WRONG"

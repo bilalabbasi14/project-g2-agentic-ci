@@ -78,10 +78,16 @@ def check(lrts_root, dante_root, solutions_root, expected_builds=726, expected_e
         results.append((f"RQ1/{project}.csv", False, f"missing: {rq1}"))
     else:
         with open(rq1, newline="", encoding="utf-8") as f:
-            rows = list(csv.DictReader(f))
-        n = len({r["build"] for r in rows})
-        results.append((f"RQ1/{project}.csv", n == expected_eval_builds,
-                        f"{n} distinct builds in {len(rows)} rows (expected {expected_eval_builds} builds)"))
+            reader = csv.DictReader(f)
+            rows = list(reader)
+            columns = reader.fieldnames or []
+        if "build" not in columns:
+            results.append((f"RQ1/{project}.csv", False,
+                            f"wrong format: no 'build' column (columns: {', '.join(columns) or 'none'})"))
+        else:
+            n = len({r["build"] for r in rows})
+            results.append((f"RQ1/{project}.csv", n == expected_eval_builds,
+                            f"{n} distinct builds in {len(rows)} rows (expected {expected_eval_builds} builds)"))
 
     for budget in BUDGET_DIRS:
         folder = os.path.join(solutions_root, budget)

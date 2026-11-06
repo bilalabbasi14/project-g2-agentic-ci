@@ -132,3 +132,31 @@ def test_eval_keys_dedup_and_config_dir(tmp_path):
     assert sc.cache_dir_from_config({}) is None
     assert sc.cache_dir_from_config({"paths_p2": {"source_cache": "  "}}) is None
     assert sc.cache_dir_from_config({"paths_p2": {"source_cache": str(tmp_path)}}) == tmp_path
+
+
+def test_three_cache_forms_give_identical_builddata(tmp_path):
+    """<key>.json.gz (as written), <key>.json (unpacked) and a folder <key>.json.gz/ holding the JSON."""
+    root = _lrts(tmp_path)
+    git = LRTSLoader(root, "karaf", FakeRepo())
+    gz_dir = tmp_path / "gz"
+    sc.build_cache(git, [KEY], gz_dir, echo=lambda *_: None)
+    with gzip.open(gz_dir / f"{KEY}.json.gz", "rt", encoding="utf-8") as f:
+        text = f.read()
+    plain_dir = tmp_path / "plain"
+    plain_dir.mkdir()
+    (plain_dir / f"{KEY}.json").write_text(text, encoding="utf-8")
+    folder_dir = tmp_path / "folder"
+    (folder_dir / f"{KEY}.json.gz").mkdir(parents=True)
+    (folder_dir / f"{KEY}.json.gz" / f"{KEY}.json").write_text(text, encoding="utf-8")
+    odd_dir = tmp_path / "odd"                      # folder form with another file name inside
+    (odd_dir / f"{KEY}.json.gz").mkdir(parents=True)
+    (odd_dir / f"{KEY}.json.gz" / "data").write_text(text, encoding="utf-8")
+
+    expected = sc.build_signature(git.build(_row(git), keep_sources=True))
+    for d in (gz_dir, plain_dir, folder_dir, odd_dir):
+        repo = FakeRepo()
+        loader = LRTSLoader(root, "karaf", repo, source_cache_dir=d)
+        assert sc.cache_file(d, KEY) is not None
+        assert sc.build_signature(loader.build(_row(loader), keep_sources=True)) == expected, d.name
+        assert repo.calls == 0, d.name                # read from the cache, not from git
+    assert sc.cache_file(tmp_path / "missing", KEY) is None

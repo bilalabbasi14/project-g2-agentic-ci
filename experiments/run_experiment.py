@@ -3,6 +3,7 @@
     python -m experiments.run_experiment --exp E3 --seed 1 [--split test] [--methods ...]
         [--run-id E3_test_seed1] [--shard 0/2] [--base-url http://localhost:11435]
         [--provider ollama|mock] [--skip-existing] [--build-limit N] [--host kaggle-t4x2]
+        [--relevance-prompt v1|v2]
 
 Reads the config (G2_CONFIG), experiments/configs/<exp>.yaml, the evaluation set
 (cfg["eval"]["eval_set"]; for split phase1, data_eval/eval_builds.csv), the
@@ -13,6 +14,7 @@ its own files (per_build.shard<i>.csv, ..., run_meta.shard<i>.json);
 experiments/merge_shards.py combines them.
 """
 import argparse
+import copy
 import json
 import logging
 import os
@@ -147,13 +149,17 @@ def build_parser():
     ap.add_argument("--skip-existing", action="store_true", help="skip builds with runs/<build>.json")
     ap.add_argument("--build-limit", type=int, help="first N builds of the split, in eval-set order")
     ap.add_argument("--host", help='recorded in run_meta, e.g. "kaggle-t4x2"')
+    ap.add_argument("--relevance-prompt", choices=["v1", "v2"],
+                    help="override llm_p2.relevance_prompt_version (dev comparison, P2-07)")
     return ap
 
 
 def main(argv=None, cfg=None, loader=None, echo=print):
     """cfg and loader can be injected (tests); otherwise they come from the config."""
     args = build_parser().parse_args(argv)
-    cfg = cfg or load_config()
+    cfg = copy.deepcopy(cfg) if cfg is not None else load_config()
+    if args.relevance_prompt:
+        cfg.setdefault("llm_p2", {})["relevance_prompt_version"] = args.relevance_prompt
     exp = load_experiment(args.exp)
     split = args.split or exp.get("split")
     if split not in SPLITS:

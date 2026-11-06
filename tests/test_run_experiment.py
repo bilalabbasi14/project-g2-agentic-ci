@@ -142,3 +142,15 @@ def test_notebook_is_clean_and_never_prints_the_token():
     params = "".join(code[0]["source"])
     for name in ("REPO_REF", "EXP", "SPLIT", "SEEDS", "METHODS", "EXTRA_ARGS"):
         assert name + " =" in params
+
+
+def test_rerun_with_skip_existing_leaves_one_set_of_rows(tmp_path):
+    """Running the same build twice into one run_id with --skip-existing must not append duplicates."""
+    first = _run(tmp_path, "--build-limit", "1", "--skip-existing")
+    loader = KeyedLoader()
+    second = _run(tmp_path, "--build-limit", "1", "--skip-existing", loader=loader)
+    assert first["n_builds"] == 1 and second["n_builds"] == 0 and loader.built == []
+    rows = _rows(tmp_path / "results" / "DEV_dev_seed1" / "per_build.csv")
+    triples = [(r["build"], r["method"], r["budget"]) for r in rows]
+    assert len(triples) == len(set(triples)) == 3 * 3          # one build x 3 methods x 3 budgets
+    assert {r["build"] for r in rows} == {KEYS[0]}

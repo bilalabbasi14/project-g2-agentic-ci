@@ -92,4 +92,4 @@ trace:
   dir: /kaggle/working/logs/traces
   max_text_chars: 8000
 paths_p2:
-  source_cache: /kaggle/input/datasets/connectwithali27/g2-source-cache   # attached dataset (P2-09)
+  source_cache: /kaggle/input/datasets/connectwithali27/g2-source-cache/g2-source-cache   # attached dataset (P2-09), mount checked on Kaggle

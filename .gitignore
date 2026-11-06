@@ -69,6 +69,7 @@ results/*
 # --- Phase 2 ---
 cache/
 source_cache/
+config_local.yaml
 # results/ is an allow-list (git uses the last matching rule): first-level
 # folders are opened, everything inside them is ignored, then only the listed
 # files are allowed back. Full run JSONs in runs/ are never committed.

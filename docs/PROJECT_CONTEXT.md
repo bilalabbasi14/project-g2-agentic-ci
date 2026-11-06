@@ -315,7 +315,7 @@ src/eval/rating.py                 ★ rating sheets + Cohen's kappa            
 src/eval/report.py                 ★ tables, figures, gap-resolution table            Bilal
 data_eval/eval_builds_p2.csv       ★ fixed evaluation set and split                   Ali
 results/<experiment>/...           ★ per-build and summary CSVs (committed)           whoever ran it
-results/figures/, results/tables/  ★                                                  Taha
+results/figures/, results/tables/  ★ written by P2-19                                 Bilal
 logs_sample/                       ★ representative traces (committed)                whoever ran it
 docs/PROJECT_CONTEXT.md            ★ this file                                        Ali
 docs/devlog/                       ★ one Markdown file per devlog entry               everyone
@@ -400,17 +400,19 @@ README.md                          final rewrite in P2-20                       
 
 ## 13. Work order (stages)
 
-The remaining Phase 2 issues are done in three stages: first all of Ali's issues, then Bilal's, then Taha's. Within a stage, issues are done in the order listed. Where an issue depends on unmerged work by the same member, its branch is stacked on that work and its PR says "Stacked on #<PR>; merge after it."
+The remaining Phase 2 issues are done in stages: Ali's issues first, then Bilal's, then Taha's, with the runs, ratings and final issues placed where their inputs exist. The rows below run one after another, top to bottom, and within a row in the order listed. **Every issue comes after all issues in its "Depends on" line** (checked issue by issue). Where an issue depends on unmerged work by the same member, its branch is stacked on that work and its PR says "Stacked on #<PR>; merge after it."
 
-| Stage | Who | Issues, in order | Reviews and merges |
+| Step | Who | Issues, in order | Reviews and merges |
 |---|---|---|---|
-| Done | Ali | #1 P2-01, #2 P2-02, #3 P2-03, #4 P2-04 merged; #5 P2-05 open as PR #38 | Bilal |
-| **Stage 1** | Ali | #6 P2-06, #15 P2-15, #8 P2-08, #9 P2-09, #16 P2-16, #7 P2-07 | Bilal |
-| **Stage 2** | Bilal | #10 P2-10, #17 P2-17, #11 P2-11, #12 P2-12 | Ali |
-| **Runs** | Ali, Bilal | Ali: #21 P2-21 (R1). Bilal: #22 P2-22 (R2) | the other member |
-| **Stage 2 (continued)** | Bilal | #13 P2-13, #19 P2-19, #14 P2-14 | Ali |
-| **Stage 3** | Taha | #18 P2-18, #23 P2-23, #20 P2-20 | Ali or Bilal |
-| **Final** | everyone | ratings #24 P2-24 (Ali) and #25 P2-25 (Taha); paper (written by the members, not AI); release #26 P2-26 (Bilal) | — |
+| Done | Ali | #1 P2-01, #2 P2-02, #3 P2-03, #4 P2-04, #5 P2-05 merged | Bilal |
+| **1. Stage 1** | Ali | #6 P2-06, #15 P2-15, #8 P2-08, #9 P2-09, #16 P2-16, #7 P2-07 | Bilal |
+| **2. Stage 2** | Bilal | #10 P2-10, #17 P2-17, #11 P2-11, #12 P2-12, #13 P2-13 | Ali |
+| **3. Runs** | Ali, Bilal | Ali: #21 P2-21 (R1). Bilal: #22 P2-22 (R2) | the other member |
+| **4. Stage 3** | Taha | #18 P2-18, #23 P2-23 (R3) | Ali or Bilal |
+| **5. Ratings** | Ali, Taha | #24 P2-24 (Ali), #25 P2-25 (Taha) | Bilal (for #24), Ali or Bilal (for #25) |
+| **6. Analysis** | Bilal | #19 P2-19, #14 P2-14 | Ali |
+| **7. README** | Taha | #20 P2-20 | Ali or Bilal |
+| **8. Final** | everyone | paper (written by the members, not AI; #27, #28, #29); release #26 P2-26 (Bilal) last | — |
 
 Submission deadline is unchanged: Sun 8 Nov, Bilal submits before 23:55 PKT.
 

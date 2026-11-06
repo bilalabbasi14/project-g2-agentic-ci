@@ -1,17 +1,20 @@
 """Phase 2 evaluation set with a fixed chronological dev/test split (P2-08).
 
-    python -m src.data.make_eval_set_p2 [--target 120] [--n-dev 20] [--dry-run]
+    python -m src.data.make_eval_set_p2 [--n-dev 10] [--dry-run]
 
 The rule (docs/PROJECT_CONTEXT.md §6.2) is fixed before any results are seen,
-and no method's results are read here. Steps, cheap filters first:
+and no method's results are read here. Every build that passes F1-F4 is used
+(group decision of 6 November 2026: only 54 builds qualify, so the planned
+120-build target and the 60-build minimum were dropped; see
+docs/devlog/2026-11-06-ali-eval-set-size.md). Steps, cheap filters first:
   F1  enough history: chrono_index >= 100 (a full 100-build history window)
   F2  code change: split_diff(diff) returns at least one file
   F3  has failures: the raw test_class.csv has a row with outcome == 1
-  pre-selection: at most 160 builds, evenly spaced in time
+  pre-selection: only if more than 160 builds remain, 160 evenly spaced in time
   F4  usable for DANTE: loader.build(row) has a candidate (source found,
       duration > 0) with outcome 1
-  final: at most `target` builds, evenly spaced in time; fewer than 60 is an error
-  split: the earliest `n_dev` builds are "dev", the rest "test"
+  split: the earliest `n_dev` builds are "dev", the rest "test"; no usable
+      build at all, or not more than `n_dev`, is an error
 Writes data_eval/eval_builds_p2.csv and data_eval/eval_set_p2_report.md.
 Do not edit the CSV by hand; change this script and regenerate it.
 """
@@ -31,10 +34,8 @@ log = logging.getLogger(__name__)
 
 # The selection rule of P2-08 (fixed in the issue; changing one changes the evaluation set).
 MIN_HISTORY = 100          # F1: builds before the target
-PRESELECT = 160            # builds kept before the slow source check
-MIN_FINAL = 60             # fewer usable builds than this: stop and ask the group
-DEFAULT_TARGET = 120
-DEFAULT_N_DEV = 20
+PRESELECT = 160            # builds kept before the slow source check (only if more remain)
+DEFAULT_N_DEV = 10
 
 COLUMNS = ["key", "pr_name", "build_id", "stage_id", "sha", "chrono_index", "timestamp", "n_code_files",
            "n_candidates", "n_failing_candidates", "in_phase1", "split"]
@@ -42,7 +43,7 @@ REPORT = "data_eval/eval_set_p2_report.md"
 
 
 class TooFewBuildsError(RuntimeError):
-    """Fewer than MIN_FINAL builds survive the filters."""
+    """Not enough usable builds for a dev and a test split."""
 
 
 def evenly_spaced(df, n):
@@ -115,9 +116,9 @@ def usable_for_dante(build_fn, row):
     return True, None, len(cands), failing
 
 
-def select(meta, diff_reader_fn, outcomes_fn, build_fn, phase1_keys, target=DEFAULT_TARGET, n_dev=DEFAULT_N_DEV):
+def select(meta, diff_reader_fn, outcomes_fn, build_fn, phase1_keys, n_dev=DEFAULT_N_DEV):
     """The whole rule. Returns (final DataFrame with COLUMNS, report facts).
-    Raises TooFewBuildsError when fewer than MIN_FINAL builds are usable."""
+    Raises TooFewBuildsError when there are not more than n_dev usable builds."""
     cheap, counts = apply_cheap_filters(meta, diff_reader_fn, outcomes_fn)
     pre = evenly_spaced(cheap, PRESELECT)
     counts["preselected"] = len(pre)
@@ -131,10 +132,10 @@ def select(meta, diff_reader_fn, outcomes_fn, build_fn, phase1_keys, target=DEFA
             reasons[key] = reasons.get(key, 0) + 1
             log.info("excluded %s: %s", row["key"], reason)
     counts["F4"] = len(usable)
-    if len(usable) < MIN_FINAL:
-        raise TooFewBuildsError(f"only {len(usable)} usable builds (< {MIN_FINAL}); the group must decide "
-                                f"what to do. Counts: {counts}, exclusions: {reasons}")
-    final = assign_split(evenly_spaced(pd.DataFrame(usable), target), n_dev)
+    if len(usable) <= n_dev:
+        raise TooFewBuildsError(f"only {len(usable)} usable builds, not enough for {n_dev} dev builds and a "
+                                f"test split. Counts: {counts}, exclusions: {reasons}")
+    final = assign_split(pd.DataFrame(usable), n_dev)
     counts["final"] = len(final)
     keys = set(phase1_keys)
     out = pd.DataFrame({
@@ -161,9 +162,9 @@ def render_report(out, facts, command):
              f"| F1: at least {MIN_HISTORY} earlier builds | {c['F1']} |",
              f"| F2: diff changes at least one code file | {c['F2']} |",
              f"| F3: at least one failing test class | {c['F3']} |",
-             f"| Pre-selection (at most {PRESELECT}, evenly spaced) | {c['preselected']} |",
+             f"| Pre-selection (only if more than {PRESELECT}: {PRESELECT} evenly spaced) | {c['preselected']} |",
              f"| F4: a failing candidate with readable source | {c['F4']} |",
-             f"| Final (evenly spaced) | {c['final']} |", "", "## Split", "",
+             f"| Final (all builds that pass F1-F4) | {c['final']} |", "", "## Split", "",
              "| Split | Builds | First build date (UTC) | Last build date (UTC) | Builds also in Phase 1 |",
              "|---|---|---|---|---|"]
     for name in ("dev", "test"):
@@ -180,7 +181,6 @@ def render_report(out, facts, command):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
-    ap.add_argument("--target", type=int, default=DEFAULT_TARGET)
     ap.add_argument("--n-dev", type=int, default=DEFAULT_N_DEV)
     ap.add_argument("--dry-run", action="store_true", help="print the counts after F1-F3 and stop")
     args = ap.parse_args(argv)
@@ -211,7 +211,7 @@ def main(argv=None):
     command = "python -m src.data.make_eval_set_p2" + "".join(
         f" {a}" for a in (argv if argv is not None else sys.argv[1:]))
     try:
-        out, facts = select(meta, diff_fn, outcomes_fn, lambda r: loader.build(r), phase1, args.target, args.n_dev)
+        out, facts = select(meta, diff_fn, outcomes_fn, lambda r: loader.build(r), phase1, args.n_dev)
     except TooFewBuildsError as e:
         raise SystemExit(f"ERROR: {e}") from e     # nothing is written
     write(out, facts, command, repo_path(cfg["eval"]["eval_set"]), repo_path(REPORT))

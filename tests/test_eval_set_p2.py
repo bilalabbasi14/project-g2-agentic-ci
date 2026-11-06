@@ -73,28 +73,40 @@ def test_select_full_rule_and_columns():
             return _build(failing=0)
         return _build()
 
-    out, facts = m.select(meta, _all_pass, _fails, build_fn, phase1_keys=["PR-150_build1"], target=120, n_dev=20)
+    out, facts = m.select(meta, _all_pass, _fails, build_fn, phase1_keys=["PR-150_build1"])
     assert list(out.columns) == m.COLUMNS
-    assert len(out) == 120 and (out["split"] == "dev").sum() == 20 and (out["split"] == "test").sum() == 100
+    # 300 pass F1-F3 -> 160 pre-selected (more than 160) -> every build that passes F4 is used
+    assert facts["counts"]["F3"] == 300 and facts["counts"]["preselected"] == 160
+    excluded = sum(facts["reasons"].values())
+    assert excluded > 0 and len(out) == facts["counts"]["F4"] == facts["counts"]["final"] == 160 - excluded
+    assert (out["split"] == "dev").sum() == m.DEFAULT_N_DEV == 10
+    assert (out["split"] == "test").sum() == len(out) - 10
     assert out[out.split == "dev"]["chrono_index"].max() < out[out.split == "test"]["chrono_index"].min()
-    assert facts["counts"]["preselected"] == 160
-    assert set(facts["reasons"]) <= {"load_error", "no_commit_in_clone", "no_failing_candidate"}
+    assert set(facts["reasons"]) == {"load_error", "no_commit_in_clone", "no_failing_candidate"}
     assert out["in_phase1"].dtype == bool
     report = m.render_report(out, facts, "python -m src.data.make_eval_set_p2")
-    assert "| Final (evenly spaced) | 120 |" in report and "| dev | 20 |" in report
+    assert f"| Final (all builds that pass F1-F4) | {len(out)} |" in report and "| dev | 10 |" in report
+
+
+def test_all_qualifying_builds_are_used_without_preselection():
+    meta = _meta(154)              # 54 builds pass F1-F3, fewer than 160: no pre-selection, no target
+    out, facts = m.select(meta, _all_pass, _fails, lambda r: _build(), [])
+    assert facts["counts"]["F3"] == facts["counts"]["preselected"] == facts["counts"]["final"] == 54
+    assert len(out) == 54 and (out["split"] == "dev").sum() == 10 and (out["split"] == "test").sum() == 44
+    assert out["chrono_index"].tolist() == list(range(100, 154))
 
 
 def test_select_is_deterministic():
     meta = _meta(300)
-    a, _ = m.select(meta, _all_pass, _fails, lambda r: _build(), [], 120, 20)
-    b, _ = m.select(meta, _all_pass, _fails, lambda r: _build(), [], 120, 20)
+    a, _ = m.select(meta, _all_pass, _fails, lambda r: _build(), [], 10)
+    b, _ = m.select(meta, _all_pass, _fails, lambda r: _build(), [], 10)
     pd.testing.assert_frame_equal(a, b)
 
 
 def test_too_few_builds_raises_and_writes_nothing(tmp_path, monkeypatch):
-    meta = _meta(150)          # only 50 builds have 100 earlier builds
+    meta = _meta(110)          # only 10 builds have 100 earlier builds: no test split left after 10 dev
     with pytest.raises(m.TooFewBuildsError):
-        m.select(meta, _all_pass, _fails, lambda r: _build(), [], 120, 20)
+        m.select(meta, _all_pass, _fails, lambda r: _build(), [], 10)
 
     class FakeLoader:
         def __init__(self, *a, **k):

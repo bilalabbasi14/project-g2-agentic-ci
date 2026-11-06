@@ -78,6 +78,17 @@ def test_router_fallback_writes_fallback_event(tmp_path):
     assert events[2]["payload"] == res.fallbacks[0].to_dict()
 
 
+def test_retry_writes_one_llm_call_per_attempt(tmp_path):
+    t = TraceLogger(tmp_path, "run1")
+    router = FallbackRouter(SemanticAnalyzer(MockProvider(["not json", _ok("t.A")]), trace=t),
+                            min_confidence=0.3, max_retries=1, trace=t, run_id="run1")
+    res = router.run("b1", _reqs("t.A"), ["t.A"])
+    assert res.source == "llm" and not res.fallbacks
+    events = _lines(tmp_path / "run1" / "b1.jsonl")
+    assert [(e["event"], e["payload"]["attempt"], e["payload"]["response"]) for e in events] == [
+        ("llm_call", 0, "not json"), ("llm_call", 1, _ok("t.A"))]
+
+
 def test_components_without_trace_behave_as_before():
     router = FallbackRouter(SemanticAnalyzer(MockProvider([_ok("t.A")])), min_confidence=0.3)
     res = router.run("b1", _reqs("t.A"), ["t.A"])

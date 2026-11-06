@@ -3,32 +3,64 @@
 Takes the test_class.csv.zip paths of the history builds, oldest first (the
 caller chooses which builds, e.g. the 100 builds before the target). Reads
 only those files; outcome 1 = fail, anything else counts as not failed.
+
+A build's test results may be stored as the original `test_class.csv.zip` or,
+in the copy Kaggle serves, already extracted as `test_class.csv` in the same
+folder. resolve_test_class_file / open_test_class_csv accept both, so laptops
+and Kaggle use the same code.
 """
+import contextlib
 import csv
 import io
+import os
 import zipfile
+
+CSV_NAME = "test_class.csv"
+
+
+def resolve_test_class_file(zip_path):
+    """Return the existing results file for a build: the .zip if present, else the
+    extracted test_class.csv next to it, else None. Accepts str or path-like."""
+    zip_path = os.fspath(zip_path)
+    if os.path.isfile(zip_path):
+        return zip_path
+    extracted = os.path.join(os.path.dirname(zip_path), CSV_NAME)
+    return extracted if os.path.isfile(extracted) else None
+
+
+@contextlib.contextmanager
+def open_test_class_csv(path):
+    """Open test_class.csv as UTF-8 text, from inside a .zip or as a plain file."""
+    path = os.fspath(path)
+    if path.lower().endswith(".zip"):
+        with zipfile.ZipFile(path) as z:
+            name = next(n for n in z.namelist() if n.lower().endswith(CSV_NAME))
+            with z.open(name) as fh:
+                yield io.TextIOWrapper(fh, "utf-8")
+    else:
+        with open(path, "r", encoding="utf-8", newline="") as fh:
+            yield fh
 
 
 def read_test_class_zip(path):
-    """Return {testclass: (outcome, duration)} from one LRTS test_class.csv.zip."""
-    with zipfile.ZipFile(path) as z:
-        name = next(n for n in z.namelist() if n.lower().endswith("test_class.csv"))
-        with z.open(name) as fh:
-            rows = csv.DictReader(io.TextIOWrapper(fh, "utf-8"))
-            out = {}
-            for r in rows:
-                if not r.get("testclass"):
-                    continue
-                try:
-                    outcome = int(float(r.get("outcome") or 0))
-                except ValueError:
-                    outcome = 0
-                try:
-                    duration = float(r.get("duration") or 0)
-                except ValueError:
-                    duration = 0.0
-                out[r["testclass"]] = (outcome, duration)
-            return out
+    """Return {testclass: (outcome, duration)} from one build's test results
+    (test_class.csv.zip, or its extracted test_class.csv)."""
+    resolved = resolve_test_class_file(path) or path
+    with open_test_class_csv(resolved) as fh:
+        out = {}
+        for r in csv.DictReader(fh):
+            if not r.get("testclass"):
+                continue
+            try:
+                outcome = int(float(r.get("outcome") or 0))
+            except ValueError:
+                outcome = 0
+            try:
+                duration = float(r.get("duration") or 0)
+            except ValueError:
+                duration = 0.0
+            out[r["testclass"]] = (outcome, duration)
+        return out
 
 
 class HistoryRetrieval:

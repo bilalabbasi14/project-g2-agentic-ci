@@ -63,11 +63,43 @@ def read_test_class_zip(path):
         return out
 
 
+def _frame_to_outcomes(frame):
+    """{testclass: (outcome, duration)} from an in-memory test_class frame, with
+    the same parsing as read_test_class_zip (empty names skipped, bad numbers -> 0)."""
+    out = {}
+    cols = frame.columns
+    for r in frame.to_dict("records"):
+        name = r.get("testclass")
+        if name is None or name != name or name == "":   # None, NaN or empty
+            continue
+        o = r.get("outcome") if "outcome" in cols else 0
+        try:
+            outcome = int(float(o)) if o == o and o not in (None, "") else 0
+        except (TypeError, ValueError):
+            outcome = 0
+        d = r.get("duration") if "duration" in cols else 0
+        try:
+            duration = float(d) if d == d and d not in (None, "") else 0.0
+        except (TypeError, ValueError):
+            duration = 0.0
+        out[str(name)] = (outcome, duration)
+    return out
+
+
 class HistoryRetrieval:
     def __init__(self, history_zip_paths, recent=10):
         self.paths = list(history_zip_paths)
         self.recent = recent
         self._builds = None
+
+    @classmethod
+    def from_frames(cls, frames, recent=10):
+        """Build the tool from frames already in memory (HistoryData.frames, oldest
+        first; columns testclass, outcome, duration). Gives the same output as
+        reading the equivalent test_class files, without any disk access."""
+        tool = cls([], recent)
+        tool._builds = [_frame_to_outcomes(f) for f in frames]
+        return tool
 
     def _load(self):
         if self._builds is None:

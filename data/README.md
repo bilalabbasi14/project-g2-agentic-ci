@@ -51,3 +51,49 @@ Test sources are read with `git ls-tree` / `git cat-file` at each build commit; 
 ## Generated files
 
 - `data_eval/eval_builds.csv` — `python -m src.data.make_eval_builds`
+
+## Phase 2: getting the data
+
+The input data is shared as a **private Kaggle dataset** `connectwithali27/karaf-data` (owner: Ali, Kaggle user `connectwithali27`; Bilal and Taha are collaborators). It contains one top folder `g2-karaf-data`:
+
+```
+g2-karaf-data/
+  lrts/dataset.csv
+  lrts/processed_test_result/karaf/<pr_name>_build<id>/stage_single/test_class.csv.zip   (or test_class.csv, see below)
+  lrts/shadata/karaf/diff/<pr_name>_build<id>.diff
+  dante/experiments/RQ1/*.csv
+  dante/rq2_karaf/Budget_05_Percent/<build>/{DANTE-CCH,Random}.json
+  dante/rq2_karaf/Budget_10_Percent/...
+  dante/rq2_karaf/Budget_20_Percent/...
+  README.txt
+```
+
+Do not redistribute it publicly.
+
+Kaggle unpacked the nested `test_class.csv.zip` files when the dataset was uploaded, so the Kaggle copy (and possibly a copy downloaded from Kaggle) has `stage_single/test_class.csv` instead of `stage_single/test_class.csv.zip`. The code reads both forms (`src/tools/history_retrieval.py`: `resolve_test_class_file`, `open_test_class_csv`), so nothing needs to be re-zipped.
+
+1. **Download to a laptop.** Either open the dataset page on kaggle.com and click *Download*, or install the client (`python -m pip install kaggle`), place your API token at `~/.kaggle/kaggle.json` (Kaggle → *Settings* → *Create New Token*; never commit it) and run
+   `kaggle datasets download connectwithali27/karaf-data --unzip`
+2. **Unzip** to a short path, for example `C:/g2w/`, so that you get `C:/g2w/g2-karaf-data/lrts/...` and `C:/g2w/g2-karaf-data/dante/...` (short paths avoid the Windows 260-character limit).
+3. **Point the config at it** without editing the committed `config.yaml`: copy it to a personal file (for example `config_local.yaml`, not committed) and set
+   - `paths.lrts_root` -> `<unzip folder>/g2-karaf-data/lrts`
+   - `paths.dante_root` -> `<unzip folder>/g2-karaf-data/dante`
+   - `paths.dante_solutions` -> `<unzip folder>/g2-karaf-data/dante/rq2_karaf`
+
+   then select it with the `G2_CONFIG` environment variable (see `.env.example`), e.g. PowerShell `$env:G2_CONFIG="config_local.yaml"`, bash `export G2_CONFIG=config_local.yaml`.
+4. **On Kaggle**, attach the dataset to the notebook (*Add Input* → `karaf-data` by `connectwithali27`). The folder that contains `lrts/` and `dante/` is mounted at:
+   `/kaggle/input/datasets/connectwithali27/karaf-data/g2-karaf-data`
+   (Kaggle named the dataset `karaf-data` and kept the zip's top folder `g2-karaf-data` inside it). The three paths are therefore `<mount>/lrts`, `<mount>/dante` and `<mount>/dante/rq2_karaf`.
+5. **Check the data**:
+   ```
+   python -m src.data.check_data
+   ```
+   or with explicit folders:
+   ```
+   python -m src.data.check_data --lrts <lrts_root> --dante <dante_root> --solutions <dante_solutions>
+   ```
+   On Kaggle:
+   ```
+   python -m src.data.check_data --lrts /kaggle/input/datasets/connectwithali27/karaf-data/g2-karaf-data/lrts --dante /kaggle/input/datasets/connectwithali27/karaf-data/g2-karaf-data/dante --solutions /kaggle/input/datasets/connectwithali27/karaf-data/g2-karaf-data/dante/rq2_karaf
+   ```
+   Every line must say `OK` (726 karaf builds with test results, as `.zip` or extracted `.csv`, and diffs, 50 distinct builds in `RQ1/karaf.csv`, 50 build folders with `DANTE-CCH.json` and `Random.json` per budget); the exit code is 0 only then.

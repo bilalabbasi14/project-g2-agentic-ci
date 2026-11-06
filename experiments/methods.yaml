@@ -1,0 +1,16 @@
+# Method catalogue: the 14 methods of docs/PROJECT_CONTEXT.md §5.2, read by
+# src.pipeline.load_method_specs. Names are exact strings used in every result file.
+- {name: Random,                     relevance_source: none,               weight_mode: random}
+- {name: History-only,               relevance_source: none,               weight_mode: history_only}
+- {name: TF-IDF-only,                relevance_source: tfidf,              weight_mode: relevance_only}
+- {name: DANTE-CCH-shipped,          relevance_source: tfidf,              weight_mode: fixed, w: 1.0}
+- {name: DANTE-CCH,                  relevance_source: tfidf,              weight_mode: fixed, w: 0.6666667}
+- {name: DANTE-CCH (stored),         relevance_source: none,               weight_mode: fixed, w: 0.6666667}   # read from stored files; Phase 1 builds only
+- {name: Tuned-weight (TF-IDF),      relevance_source: tfidf,              weight_mode: tuned, tuned_key: tfidf}
+- {name: Single-call LLM,            relevance_source: llm_single_call,    weight_mode: fixed, w: 0.6666667}
+- {name: LLM-relevance,              relevance_source: llm_shortlist,      weight_mode: fixed, w: 0.6666667}
+- {name: Tuned-weight (LLM),         relevance_source: llm_shortlist,      weight_mode: tuned, tuned_key: llm}
+- {name: Agent-weighted,             relevance_source: llm_shortlist,      weight_mode: agent}
+- {name: Full system,                relevance_source: llm_shortlist,      weight_mode: agent, explainer: true}
+- {name: Agent-weighted (TF-IDF),    relevance_source: tfidf,              weight_mode: agent}
+- {name: Full system (no shortlist), relevance_source: llm_all_individual, weight_mode: agent}

@@ -13,8 +13,9 @@ the git clone (`LRTSLoader.build(row, keep_sources=True)`) and writes
 with one entry for every test case whose source path was found. Existing files
 are skipped unless --force is given (resumable). LRTSLoader(source_cache_dir=...)
 reads these files instead of git and produces the same BuildData. Because
-Kaggle may unpack compressed files on upload, a plain `<build_key>.json` and a
-folder `<build_key>.json.gz/` holding the JSON are read too (see cache_file).
+Kaggle unpacks compressed files on upload, a plain `<build_key>.json` and a
+folder `<build_key>.json/` or `<build_key>.json.gz/` holding the entry are read
+too (see cache_file; the folder form is what Kaggle produced).
 
 --check K loads the first K builds once through git and once through the
 cache and prints whether the BuildData are identical.
@@ -41,23 +42,30 @@ def cache_dir_from_config(cfg):
 
 def cache_file(cache_dir, build_key):
     """The cache file of a build, or None. Accepted forms, in this order:
-    `<key>.json.gz` (as written), `<key>.json` (unpacked by Kaggle), and a folder
-    `<key>.json.gz/` holding the unpacked JSON (another way Kaggle unpacks uploads)."""
+    - a file `<key>.json.gz` (as written) or `<key>.json` (unpacked);
+    - a folder `<key>.json/` or `<key>.json.gz/` holding the entry. This is how
+      Kaggle unpacks an uploaded `.json.gz`: on 6 Nov 2026 every
+      `<key>.json.gz` became a folder `<key>.json/` holding one file named after
+      the gzip header (`<key>.json.gz.tmp`). Inside the folder, `<key>.json` is
+      taken if present, otherwise its only file, whatever its name.
+    read_cache recognises gzip by content, so the inner file may be either."""
     if cache_dir is None:
         return None
     base = Path(cache_dir)
-    for name in (f"{build_key}.json.gz", f"{build_key}.json"):
+    names = (f"{build_key}.json.gz", f"{build_key}.json")
+    for name in names:
         p = base / name
         if p.is_file():
             return p
-    folder = base / f"{build_key}.json.gz"
-    if folder.is_dir():
-        inside = folder / f"{build_key}.json"
-        if inside.is_file():
-            return inside
-        files = sorted(p for p in folder.iterdir() if p.is_file())
-        if len(files) == 1:
-            return files[0]
+    for name in names:
+        folder = base / name
+        if folder.is_dir():
+            inside = folder / f"{build_key}.json"
+            if inside.is_file():
+                return inside
+            files = sorted(p for p in folder.iterdir() if p.is_file())
+            if len(files) == 1:
+                return files[0]
     return None
 
 
@@ -84,12 +92,15 @@ def cache_entry(build):
 
 
 def write_cache(path, entry):
-    """Write atomically (temp file + rename) so an interrupted run leaves no half file."""
+    """Write atomically (temp file + rename) so an interrupted run leaves no half file.
+    The gzip header stores the name `<key>.json` (not the temp name) and mtime 0,
+    so a tool that unpacks the file gets `<key>.json` and the bytes are reproducible."""
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_name(path.name + ".tmp")
-    with gzip.open(tmp, "wt", encoding="utf-8") as f:
-        json.dump(entry, f, ensure_ascii=False)
+    inner = path.name[:-3] if path.name.endswith(".gz") else path.name
+    with open(tmp, "wb") as raw, gzip.GzipFile(filename=inner, mode="wb", fileobj=raw, mtime=0) as gz:
+        gz.write(json.dumps(entry, ensure_ascii=False).encode("utf-8"))
     os.replace(tmp, path)
 
 

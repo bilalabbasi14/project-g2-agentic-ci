@@ -154,3 +154,27 @@ def test_rerun_with_skip_existing_leaves_one_set_of_rows(tmp_path):
     triples = [(r["build"], r["method"], r["budget"]) for r in rows]
     assert len(triples) == len(set(triples)) == 3 * 3          # one build x 3 methods x 3 budgets
     assert {r["build"] for r in rows} == {KEYS[0]}
+
+
+CLI_MODULES = ["experiments.run_experiment", "experiments.merge_shards", "src.data.source_cache",
+               "src.data.make_eval_set_p2", "src.data.check_data", "src.data.extract_inputs",
+               "src.obs.export_sample", "src.dante.compare_stored", "src.eval.compare_baselines",
+               "src.agent.llm_smoke"]
+
+
+def test_runner_help_renders():
+    from experiments.run_experiment import build_parser
+    text = build_parser().format_help()
+    assert "--shard" in text and "position % n == i" in text
+
+
+@pytest.mark.parametrize("module", CLI_MODULES)
+def test_every_cli_help_exits_zero(module):
+    """argparse help strings are %-formatted; an unescaped % breaks --help (and parsing on 3.14)."""
+    import subprocess
+    import sys
+    from pathlib import Path
+    r = subprocess.run([sys.executable, "-m", module, "--help"], capture_output=True, text=True, timeout=120,
+                       cwd=Path(__file__).resolve().parent.parent)
+    assert r.returncode == 0, r.stderr[-500:]
+    assert "usage:" in r.stdout

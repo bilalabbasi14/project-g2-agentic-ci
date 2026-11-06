@@ -141,7 +141,7 @@ def build_parser():
     ap.add_argument("--seed", type=int, required=True)
     ap.add_argument("--methods", nargs="+", help="override the config's method list")
     ap.add_argument("--run-id", help="default: <exp>_<split>_seed<seed>")
-    ap.add_argument("--shard", type=parse_shard, help="i/n: only builds whose position % n == i")
+    ap.add_argument("--shard", type=parse_shard, help="i/n: only builds whose position %% n == i")
     ap.add_argument("--base-url", help="Ollama server for this process")
     ap.add_argument("--provider", choices=["ollama", "mock"], default="ollama")
     ap.add_argument("--skip-existing", action="store_true", help="skip builds with runs/<build>.json")

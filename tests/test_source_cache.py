@@ -160,3 +160,38 @@ def test_three_cache_forms_give_identical_builddata(tmp_path):
         assert sc.build_signature(loader.build(_row(loader), keep_sources=True)) == expected, d.name
         assert repo.calls == 0, d.name                # read from the cache, not from git
     assert sc.cache_file(tmp_path / "missing", KEY) is None
+
+
+def test_real_kaggle_layout_folder_named_json(tmp_path):
+    """The layout Kaggle produced on 6 Nov 2026 from the uploaded zip:
+    /kaggle/input/datasets/<user>/g2-source-cache/g2-source-cache/<key>.json/<key>.json.gz.tmp
+    (each .json.gz unpacked into a folder named <key>.json holding one file named after the gzip header)."""
+    root = _lrts(tmp_path)
+    git = LRTSLoader(root, "karaf", FakeRepo())
+    written = tmp_path / "written"
+    sc.build_cache(git, [KEY], written, echo=lambda *_: None)
+    gz_bytes = (written / f"{KEY}.json.gz").read_bytes()
+    expected = sc.build_signature(git.build(_row(git), keep_sources=True))
+    for label, content in (("unpacked", gzip.decompress(gz_bytes)), ("still-gzipped", gz_bytes)):
+        mount = tmp_path / label / "g2-source-cache" / "g2-source-cache"
+        (mount / f"{KEY}.json").mkdir(parents=True)
+        (mount / f"{KEY}.json" / f"{KEY}.json.gz.tmp").write_bytes(content)
+        repo = FakeRepo()
+        loader = LRTSLoader(root, "karaf", repo, source_cache_dir=mount)
+        b = loader.build(_row(loader), keep_sources=True)
+        assert b.sources_available and sc.build_signature(b) == expected, label
+        assert repo.calls == 0, label
+    empty = tmp_path / "empty" / f"{KEY}.json"          # a folder with two files is ambiguous: not used
+    empty.mkdir(parents=True)
+    (empty / "a").write_text("{}")
+    (empty / "b").write_text("{}")
+    assert sc.cache_file(empty.parent, KEY) is None
+
+
+def test_written_gzip_header_names_the_json(tmp_path):
+    root = _lrts(tmp_path)
+    sc.build_cache(LRTSLoader(root, "karaf", FakeRepo()), [KEY], tmp_path / "c", echo=lambda *_: None)
+    data = (tmp_path / "c" / f"{KEY}.json.gz").read_bytes()
+    assert data[:2] == b"\x1f\x8b" and data[3] & 0x08                     # FNAME flag set
+    assert data[10:data.index(b"\x00", 10)] == f"{KEY}.json".encode()      # not the .tmp name
+    assert data[4:8] == b"\x00\x00\x00\x00"                                # mtime 0: reproducible bytes

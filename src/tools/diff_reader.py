@@ -42,6 +42,14 @@ class DiffReader:
         with open(diff_path, "r", encoding="utf-8", errors="ignore") as f:
             self.files = split_diff(f.read(), ignored_extensions)
 
+    @classmethod
+    def from_files(cls, diff_files):
+        """Serve list_files() and __call__(file) from an already-split diff
+        (BuildData.diff_files, the output of split_diff); reads no file."""
+        reader = cls.__new__(cls)
+        reader.files = dict(diff_files)
+        return reader
+
     def list_files(self):
         return sorted(self.files)
 

@@ -182,3 +182,28 @@ relevance in [0, 1] and no other keys.
 {"scores": [{"test": "org.example.cache.LruCacheTest", "relevance": 0.9},
             {"test": "org.example.web.ServletTest", "relevance": 0.0}]}
 ```
+
+## Trace events
+
+Agent trajectories are written by `src.obs.trace.TraceLogger` as one `TraceEvent`
+per JSON line in `<trace.dir>/<run_id>/<build_id>.jsonl` (`trace.dir` defaults to
+`logs/traces`, git-ignored). `step` starts at 1 for each build; strings in the
+payload longer than `trace.max_text_chars` are cut and end with `…[truncated]`.
+Components take an optional `trace` and use `NullTrace` when none is given.
+`python -m src.obs.export_sample --run-id <run> --builds <build> ...` (or `--n N`)
+copies traces to `logs_sample/<run>/` and writes a readable `.md` per build.
+
+Every component follows this table:
+
+| Component | Event | When | Payload keys |
+|---|---|---|---|
+| `pipeline` | `state` | start of a build; after DANTE scores; after the shortlist; after selection per method and budget | `stage` (`"loaded"`, `"dante_scored"`, `"shortlisted"`, `"selected"`), plus the counts and names for that stage (`n_candidates`, `shortlist`, `method`, `budget`, `selected`) |
+| `semantic_analyzer` | `llm_call` | each relevance call | `test`, `prompt`, `response`, `attempt`, `cached`, `prompt_tokens`, `completion_tokens` |
+| `fallback_router` | `fallback` | each fallback | the `FallbackRecord` as a dict |
+| `orchestrator` | `llm_call` | each orchestrator LLM call | `step`, `prompt`, `response`, `attempt`, `cached` |
+| `orchestrator` | `tool_call` | each tool call | `tool`, `args`, `output`, `ok`, `error` |
+| `orchestrator` | `decision` | final decision | `w`, `confidence`, `source`, `reason`, `tool_calls` (count) |
+| `explainer` | `explanation` | each explanation | `test`, `budget`, `evidence`, `justification`, `cited_facts`, `ok`, `error` |
+| `single_call` | `llm_call` | the single call | `n_tests`, `prompt`, `response`, `cached` |
+
+A failed LLM call is logged with `response: null` and an extra key `error`.

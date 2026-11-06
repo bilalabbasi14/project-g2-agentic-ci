@@ -11,6 +11,7 @@ import re
 import jsonschema
 
 from src.contracts import RelevanceRequest, RelevanceResponse, validate
+from src.obs.trace import NullTrace
 
 PROMPT_VERSION = "v1"
 
@@ -109,16 +110,62 @@ def parse_response(text, expected_test):
 
 
 class SemanticAnalyzer:
-    def __init__(self, provider):
+    def __init__(self, provider, trace=None, run_id=None):
+        """trace: optional TraceLogger (src.obs.trace); without one nothing is logged.
+        run_id: the run the analyzer works for (the logger writes under its own run id)."""
         self.provider = provider
+        self.trace = trace or NullTrace()
+        self.run_id = run_id
 
     def analyze(self, request):
-        text = self.provider.complete(build_prompt(request), json_mode=True)
+        prompt = build_prompt(request)
+        try:
+            text = self.provider.complete(prompt, json_mode=True)
+        except Exception as e:
+            self._trace_call(request, prompt, None, error=type(e).__name__)
+            raise
+        self._trace_call(request, prompt, text)
         return parse_response(text, request.test)
+
+    def _trace_call(self, request, prompt, response, attempt=0, error=None):
+        """One llm_call trace event (payload keys from the table in src/obs/trace.py)."""
+        rec = self.provider.calls[-1] if getattr(self.provider, "calls", None) else None
+        payload = {"test": request.test, "prompt": prompt, "response": response, "attempt": attempt,
+                   "cached": bool(getattr(rec, "cached", False)),
+                   "prompt_tokens": getattr(rec, "prompt_tokens", None),
+                   "completion_tokens": getattr(rec, "completion_tokens", None)}
+        if error:
+            payload["error"] = error
+        self.trace.event(request.build_id, "semantic_analyzer", "llm_call", payload,
+                         latency_s=getattr(rec, "latency_s", None))
 
     def analyze_with_retry(self, request, max_retries=1):
         """Like analyze, but retries a failed call; returns
-        (RelevanceResponse or None, fallback reason, detail, attempts)."""
+        (RelevanceResponse or None, fallback reason, detail, attempts).
+        Each attempt writes its own llm_call trace event with its attempt number."""
         from src.agent.retry import complete_and_parse
-        return complete_and_parse(self.provider, build_prompt(request),
+        return complete_and_parse(_TracedProvider(self, request), build_prompt(request),
                                   lambda text: parse_response(text, request.test), max_retries)
+
+
+class _TracedProvider:
+    """Passes calls on to the analyzer's provider and writes one llm_call event per attempt."""
+
+    def __init__(self, analyzer, request):
+        from src.agent.retry import _accepts_attempt
+        self.analyzer = analyzer
+        self.request = request
+        self.inner_takes_attempt = _accepts_attempt(analyzer.provider)
+
+    def complete(self, prompt, json_mode=None, attempt=0):
+        inner = self.analyzer.provider
+        try:
+            if self.inner_takes_attempt:
+                text = inner.complete(prompt, json_mode, attempt=attempt)
+            else:
+                text = inner.complete(prompt, json_mode)
+        except Exception as e:
+            self.analyzer._trace_call(self.request, prompt, None, attempt=attempt, error=type(e).__name__)
+            raise
+        self.analyzer._trace_call(self.request, prompt, text, attempt=attempt)
+        return text

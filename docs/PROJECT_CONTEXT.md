@@ -320,7 +320,7 @@ logs_sample/                       ★ representative traces (committed)        
 docs/PROJECT_CONTEXT.md            ★ this file                                        Ali
 docs/devlog/                       ★ one Markdown file per devlog entry               everyone
 docs/cases/                        ★ representative success/failure cases            Bilal
-README.md                          final rewrite in P2-20                             Taha (others: put README text in your PR description; Taha merges it in)
+README.md                          final rewrite in P2-20                             Ali (others: put README text in your PR description; Ali merges it in)
 ```
 
 **Files every run produces** (defined exactly in P2-15; other issues read them, so names and columns must not change). Each run is written to `results/<run_id>/`, where `run_id` looks like `E3_test_seed1`:

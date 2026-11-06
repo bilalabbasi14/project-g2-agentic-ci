@@ -154,3 +154,75 @@ def test_rerun_with_skip_existing_leaves_one_set_of_rows(tmp_path):
     triples = [(r["build"], r["method"], r["budget"]) for r in rows]
     assert len(triples) == len(set(triples)) == 3 * 3          # one build x 3 methods x 3 budgets
     assert {r["build"] for r in rows} == {KEYS[0]}
+
+
+CLI_MODULES = ["experiments.run_experiment", "experiments.merge_shards", "src.data.source_cache",
+               "src.data.make_eval_set_p2", "src.data.check_data", "src.data.extract_inputs",
+               "src.obs.export_sample", "src.dante.compare_stored", "src.eval.compare_baselines",
+               "src.agent.llm_smoke"]
+
+
+def test_runner_help_renders():
+    from experiments.run_experiment import build_parser
+    text = build_parser().format_help()
+    assert "--shard" in text and "position % n == i" in text
+
+
+@pytest.mark.parametrize("module", CLI_MODULES)
+def test_every_cli_help_exits_zero(module):
+    """argparse help strings are %-formatted; an unescaped % breaks --help (and parsing on 3.14)."""
+    import subprocess
+    import sys
+    from pathlib import Path
+    r = subprocess.run([sys.executable, "-m", module, "--help"], capture_output=True, text=True, timeout=120,
+                       cwd=Path(__file__).resolve().parent.parent)
+    assert r.returncode == 0, r.stderr[-500:]
+    assert "usage:" in r.stdout
+
+
+def test_notebook_clone_cell_fails_loudly_and_hides_the_token():
+    from pathlib import Path
+    nb = json.loads((Path(__file__).resolve().parent.parent / "experiments" / "kaggle_runner.ipynb")
+                    .read_text(encoding="utf-8"))
+    clone = next("".join(c["source"]) for c in nb["cells"]
+                 if c["cell_type"] == "code" and "GITHUB_TOKEN" in "".join(c["source"]))
+    assert 'get_secret("GITHUB_TOKEN")' in clone                   # token only from the Kaggle Secret
+    assert "capture_output=True" in clone                           # git output never shown raw
+    assert 'replace(_token, "***")' in clone                        # errors masked
+    assert "check=False" not in clone                               # no silent failure
+    assert 'fetch", "--quiet", _url, REPO_REF' in clone             # fresh fetch even if the repo exists
+    assert '"checkout", "--quiet", "--force", "FETCH_HEAD"' in clone
+    assert "finally:" in clone and "set-url" in clone and "PUBLIC_URL" in clone   # remote reset in all cases
+    assert "del _token, _url" in clone
+    assert "ghp_" not in clone and "github_pat_" not in clone
+
+
+def test_rerun_removes_the_stale_trace(tmp_path):
+    cfg = _cfg(tmp_path)
+    stale = tmp_path / "traces" / "DEV_dev_seed1" / f"{KEYS[0]}.jsonl"
+    stale.parent.mkdir(parents=True)
+    stale.write_text('{"stale": true}\n', encoding="utf-8")
+    lines = []
+    main(["--exp", "DEV", "--seed", "1", "--provider", "mock", "--methods", "LLM-relevance",
+          "--build-limit", "1", "--skip-existing"], cfg=cfg, loader=KeyedLoader(), echo=lines.append)
+    events = [json.loads(x) for x in stale.read_text(encoding="utf-8").splitlines()]
+    assert events and all("stale" not in e for e in events)
+    assert events[0]["step"] == 1                                   # one clean trajectory from step 1
+    assert any(ln.startswith("removed stale trace") for ln in lines)
+
+
+def test_merge_drops_failed_builds_that_later_succeeded(tmp_path):
+    run_dir = tmp_path / "run"
+    run_dir.mkdir()
+    cols = merge_shards.PER_BUILD_COLUMNS
+    row = {c: "" for c in cols}
+    pd.DataFrame([{**row, "build": "B1", "method": "DANTE-CCH", "budget": "0.1"}], columns=cols).to_csv(
+        run_dir / "per_build.shard0.csv", index=False)
+    meta = {"run_id": "r", "started": "2026-11-06T10:00:00+00:00", "finished": "2026-11-06T10:05:00+00:00",
+            "git_commit": "abc", "n_builds": 2, "shard": [0, 1], "skipped_existing": [],
+            "failed_builds": [{"build": "B1", "error": "timeout in an earlier attempt"},
+                              {"build": "B2", "error": "RuntimeError: still broken"}]}
+    (run_dir / "run_meta.shard0.json").write_text(json.dumps(meta), encoding="utf-8")
+    merge_shards.merge_run(run_dir)
+    merged = json.loads((run_dir / "run_meta.json").read_text(encoding="utf-8"))
+    assert [f["build"] for f in merged["failed_builds"]] == ["B2"]   # B1 now has rows, so it is not failed

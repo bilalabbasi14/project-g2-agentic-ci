@@ -56,7 +56,17 @@ def merge_csv(run_dir, stem, columns):
     return len(df), parts
 
 
-def merge_meta(run_dir):
+def completed_builds(run_dir):
+    """Builds that have rows in the merged per_build.csv."""
+    final = Path(run_dir) / "per_build.csv"
+    if not final.exists():
+        return set()
+    return set(pd.read_csv(final, dtype=str, keep_default_na=False)["build"])
+
+
+def merge_meta(run_dir, completed=None):
+    """Merge run_meta shard files. A failed_builds entry is dropped when its build has
+    rows in the merged per_build.csv (`completed`), i.e. a later attempt succeeded."""
     run_dir = Path(run_dir)
     parts = shard_files(run_dir, "run_meta", "json")
     if not parts:
@@ -69,7 +79,8 @@ def merge_meta(run_dir):
     merged["started"] = min(m["started"] for m in metas)
     merged["finished"] = max(m["finished"] for m in metas)
     merged["n_builds"] = sum(m["n_builds"] for m in metas)
-    merged["failed_builds"] = [f for m in metas for f in m["failed_builds"]]
+    done = set(completed or ())
+    merged["failed_builds"] = [f for m in metas for f in m["failed_builds"] if f["build"] not in done]
     merged["skipped_existing"] = sorted({k for m in metas for k in m.get("skipped_existing") or []})
     merged["shards"] = [m.get("shard") for m in metas if m.get("shard")] + \
         [s for m in metas for s in m.get("shards", [])]
@@ -89,7 +100,7 @@ def merge_run(run_dir):
         if n is not None:
             out[stem] = n
             done += parts
-    meta, parts = merge_meta(run_dir)
+    meta, parts = merge_meta(run_dir, completed_builds(run_dir))
     done += parts
     if meta is not None:
         out["run_meta"] = meta["n_builds"]

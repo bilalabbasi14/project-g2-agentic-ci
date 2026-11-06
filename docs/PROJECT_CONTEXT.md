@@ -295,8 +295,8 @@ src/agent/llm_provider.py          cache, seed, server selection                
 src/agent/llm_cache.py             ★ on-disk LLM answer cache                         Ali
 src/agent/semantic_analyzer.py     prompt v2                                          Ali
 src/agent/orchestrator.py          ★ Gap 3 component                                  Ali
-src/agent/single_call.py           ★ single-call LLM baseline                         Bilal
-src/agent/explainer.py             ★ Gap 2 component                                  Bilal
+src/agent/single_call.py           ★ single-call LLM baseline                         Taha
+src/agent/explainer.py             ★ Gap 2 component                                  Taha
 src/tools/registry.py              ★ tool registry used by the orchestrator           Ali
 src/obs/trace.py                   ★ trace logger                                     Ali
 src/data/make_eval_set_p2.py       ★ evaluation set + split                           Ali
@@ -308,7 +308,7 @@ src/pipeline.py                    ★ runs any set of methods on one build     
 run_end_to_end.py                  thin wrapper around src/pipeline.py                Ali
 experiments/                       ★ methods.yaml, E1–E6 configs, run_experiment.py, merge_shards.py, kaggle_runner.ipynb   Ali
 experiments/tuned_weights.yaml     ★ output of tuning                                 Bilal
-src/eval/stats.py                  ★ Friedman/Wilcoxon/Holm/effect size               Bilal
+src/eval/stats.py                  ★ Friedman/Wilcoxon/Holm/effect size               Taha (Bilal runs it on the real results)
 src/eval/shortlist_recall.py       ★                                                  Bilal
 src/eval/failure_analysis.py       ★                                                  Bilal
 src/eval/rating.py                 ★ rating sheets + Cohen's kappa                    Taha
@@ -400,19 +400,19 @@ README.md                          final rewrite in P2-20                       
 
 ## 13. Work order (stages)
 
-The remaining Phase 2 issues are done in stages: Ali's issues first, then Bilal's, then Taha's, with the runs, ratings and final issues placed where their inputs exist. The rows below run one after another, top to bottom, and within a row in the order listed. **Every issue comes after all issues in its "Depends on" line** (checked issue by issue). Where an issue depends on unmerged work by the same member, its branch is stacked on that work and its PR says "Stacked on #<PR>; merge after it."
+Taha travels on 7 November, so his four code issues come first; Ali then finishes his open PRs and Kaggle steps and does the runs; Bilal follows. The rows below run one after another, top to bottom, and within a row in the order listed; rows for different members in the same step can run in parallel. **Every issue comes after all issues in its "Depends on" line** (checked issue by issue). Where an issue depends on unmerged work by the same member, its branch is stacked on that work and its PR says "Stacked on #<PR>; merge after it."
 
 | Step | Who | Issues, in order | Reviews and merges |
 |---|---|---|---|
-| Done | Ali | #1 P2-01, #2 P2-02, #3 P2-03, #4 P2-04, #5 P2-05 merged | Bilal |
-| **1. Stage 1** | Ali | #6 P2-06, #15 P2-15, #8 P2-08, #9 P2-09, #16 P2-16, #7 P2-07 | Bilal |
-| **2. Stage 2** | Bilal | #10 P2-10, #17 P2-17, #11 P2-11, #12 P2-12, #13 P2-13 | Ali |
-| **3. Runs** | Ali, Bilal | Ali: #21 P2-21 (R1). Bilal: #22 P2-22 (R2) | the other member |
-| **4. Stage 3** | Taha | #18 P2-18, #23 P2-23 (R3) | Ali or Bilal |
-| **5. Ratings** | Ali, Taha | #24 P2-24 (Ali), #25 P2-25 (Taha) | Bilal (for #24), Ali or Bilal (for #25) |
-| **6. Analysis** | Bilal | #19 P2-19, #14 P2-14 | Ali |
-| **7. README** | Taha | #20 P2-20 | Ali or Bilal |
-| **8. Final** | everyone | paper (written by the members, not AI; #27, #28, #29); release #26 P2-26 (Bilal) last | — |
+| Done | Ali | #1 P2-01, #2 P2-02, #3 P2-03, #4 P2-04, #5 P2-05, #8 P2-08 merged | Bilal |
+| **1. Taha** | Taha | #10 P2-10, #17 P2-17, #18 P2-18 (the tool; Ali generates the sheets after R1), #13 P2-13 (code on fake data; Bilal runs it on the real results) | Ali or Bilal |
+| **1. Ali** | Ali | review fixes on his open PRs (#6, #15, #9, #16, #7) and their Kaggle steps (source cache, runner check, dev prompt comparison) | Bilal |
+| **2. Bilal** | Bilal | #11 P2-11 (LLM part after #7's dev run), #12 P2-12 | Ali |
+| **3. Runs** | Ali, Bilal | Ali: #21 P2-21 (R1), then #23 P2-23 (R3). Bilal: #22 P2-22 (R2) | the other member |
+| **4. Ratings** | Ali, Bilal | Ali generates the sheets (#18) and rates #24 P2-24; Bilal rates #25 P2-25 | the other member |
+| **5. Analysis** | Bilal | statistics (#13) on the real results, #19 P2-19, #14 P2-14 | Ali |
+| **6. README** | Ali | #20 P2-20 | Bilal |
+| **7. Final** | everyone | paper (written by the members, not AI): #27 (Ali), #28 (Bilal), #29 (Taha); release #26 P2-26 (Bilal) last | — |
 
 Submission deadline is unchanged: Sun 8 Nov, Bilal submits before 23:55 PKT.
 
@@ -422,8 +422,8 @@ Submission deadline is unchanged: Sun 8 Nov, Bilal submits before 23:55 PKT.
 
 | Member | Code issues | Runs and human tasks | Paper sections (written by the member) |
 |---|---|---|---|
-| **Muhammad Ali** | P2-01 CI and rules · P2-02 data sharing · P2-03 contracts and config · P2-04 LLM cache, seeds, servers · P2-05 trace logger · P2-06 orchestrator (Gap 3) · P2-15 pipeline with method specs · P2-08 evaluation set and split · P2-09 source cache · P2-16 experiment runner and Kaggle notebook · P2-07 relevance prompt v2 (all reviewed by Bilal) | P2-21 Kaggle run R1 (E3, E4 Gaps 1 and 3) · P2-24 rate 100 explanations | Proposed System/Methodology, Efficiency analysis |
-| **Ahmad Bilal** | P2-10 explainer (Gap 2) · P2-17 single-call baseline · P2-11 tuned-weight baselines · P2-12 shortlist recall · P2-13 statistics · P2-19 tables, figures, gap table · P2-14 failure analysis (all reviewed by Ali) | P2-22 Kaggle run R2 (E1, E2, Gap 2 run) · P2-26 release and submission | Problem Formulation, Experimental Setup, Related Work, Failure Analysis |
-| **Taha Bashir** | P2-18 rating sheets and kappa · P2-20 README and devlog | P2-23 Kaggle run R3 (E5, E6) · P2-25 rate 100 explanations | Evaluation Methodology, Results, Ablation, Limitations |
+| **Muhammad Ali** | P2-01 CI and rules · P2-02 data sharing · P2-03 contracts and config · P2-04 LLM cache, seeds, servers · P2-05 trace logger · P2-06 orchestrator (Gap 3) · P2-15 pipeline with method specs · P2-08 evaluation set and split · P2-09 source cache · P2-16 experiment runner and Kaggle notebook · P2-07 relevance prompt v2 · P2-20 README and devlog (all reviewed by Bilal) | P2-21 Kaggle run R1 (E3, E4 Gaps 1 and 3) · P2-23 Kaggle run R3 (E5, E6) · generating the rating sheets (P2-18) · P2-24 rate 100 explanations | Proposed System/Methodology, Efficiency analysis |
+| **Ahmad Bilal** | P2-11 tuned-weight baselines · P2-12 shortlist recall · P2-19 tables, figures, gap table · P2-14 failure analysis (all reviewed by Ali) | P2-22 Kaggle run R2 (E1, E2, Gap 2 run) · running the statistics (P2-13) on the real results · P2-25 rate 100 explanations · P2-26 release and submission | Problem Formulation, Experimental Setup, Related Work, Failure Analysis |
+| **Taha Bashir** | P2-10 explainer (Gap 2) · P2-17 single-call baseline · P2-18 rating tool and kappa · P2-13 statistics code (all reviewed by Ali or Bilal) | — | Evaluation Methodology, Results, Ablation, Limitations |
 
 Abstract, Introduction and Conclusion are written together at the end.

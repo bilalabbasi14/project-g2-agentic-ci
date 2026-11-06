@@ -178,3 +178,20 @@ def test_every_cli_help_exits_zero(module):
                        cwd=Path(__file__).resolve().parent.parent)
     assert r.returncode == 0, r.stderr[-500:]
     assert "usage:" in r.stdout
+
+
+def test_notebook_clone_cell_fails_loudly_and_hides_the_token():
+    from pathlib import Path
+    nb = json.loads((Path(__file__).resolve().parent.parent / "experiments" / "kaggle_runner.ipynb")
+                    .read_text(encoding="utf-8"))
+    clone = next("".join(c["source"]) for c in nb["cells"]
+                 if c["cell_type"] == "code" and "GITHUB_TOKEN" in "".join(c["source"]))
+    assert 'get_secret("GITHUB_TOKEN")' in clone                   # token only from the Kaggle Secret
+    assert "capture_output=True" in clone                           # git output never shown raw
+    assert 'replace(_token, "***")' in clone                        # errors masked
+    assert "check=False" not in clone                               # no silent failure
+    assert 'fetch", "--quiet", _url, REPO_REF' in clone             # fresh fetch even if the repo exists
+    assert '"checkout", "--quiet", "--force", "FETCH_HEAD"' in clone
+    assert "finally:" in clone and "set-url" in clone and "PUBLIC_URL" in clone   # remote reset in all cases
+    assert "del _token, _url" in clone
+    assert "ghp_" not in clone and "github_pat_" not in clone

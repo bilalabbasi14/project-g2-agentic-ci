@@ -97,3 +97,13 @@ Kaggle unpacked the nested `test_class.csv.zip` files when the dataset was uploa
    python -m src.data.check_data --lrts /kaggle/input/datasets/connectwithali27/karaf-data/g2-karaf-data/lrts --dante /kaggle/input/datasets/connectwithali27/karaf-data/g2-karaf-data/dante --solutions /kaggle/input/datasets/connectwithali27/karaf-data/g2-karaf-data/dante/rq2_karaf
    ```
    Every line must say `OK` (726 karaf builds with test results, as `.zip` or extracted `.csv`, and diffs, 50 distinct builds in `RQ1/karaf.csv`, 50 build folders with `DANTE-CCH.json` and `Random.json` per budget); the exit code is 0 only then.
+
+## Phase 2: test-source cache (no git clone needed)
+
+The LLM needs the source text of each test class at the build's commit. Kaggle notebooks have no Karaf clone, so these sources are precomputed once into a **source cache**, published as a private Kaggle dataset `connectwithali27/g2-source-cache` (owner: Ali; shared with Bilal and Taha). It holds one file per evaluation build, `<build_key>.json.gz`, for the Phase 2 evaluation builds (`data_eval/eval_builds_p2.csv`) and the Phase 1 builds (`data_eval/eval_builds.csv`). Do not redistribute it publicly. It is never committed (`source_cache/` is git-ignored).
+
+- **Generate** (needs the data and the git clone, laptop only):
+  `python -m src.data.source_cache --eval data_eval/eval_builds_p2.csv data_eval/eval_builds.csv --check 3`
+  writes to `paths_p2.source_cache` (or `--out <dir>`), skips files that already exist (`--force` rewrites them), and with `--check 3` compares the cache with git for the first 3 builds.
+- **Use**: set `paths_p2.source_cache` to the cache folder in your personal config. `LRTSLoader(..., source_cache_dir=...)` then reads a build's sources from `<dir>/<build_key>.json.gz`, or from a plain `<build_key>.json` if Kaggle unpacked the `.gz` files on upload. It falls back to the git clone when a build has no cache file. An empty or missing `paths_p2.source_cache` means "no cache".
+- **On Kaggle**, attach `g2-source-cache` (*Add Input*) and set `paths_p2.source_cache` to the folder that `!ls /kaggle/input/datasets/connectwithali27/g2-source-cache` shows contains the `PR-*_build*.json(.gz)` files. Expected mount: `/kaggle/input/datasets/connectwithali27/g2-source-cache` (to be confirmed after publishing; see PR for P2-09).

@@ -1,0 +1,6 @@
+# DEV: tuning runs on the dev split only (prompts, weights); methods are given with --methods.
+experiment: DEV
+split: dev
+seeds: [1]
+budgets: [0.05, 0.10, 0.20]
+methods: []

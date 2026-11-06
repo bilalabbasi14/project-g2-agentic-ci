@@ -27,7 +27,7 @@ import yaml
 
 from src.agent.fallback_router import FallbackRouter
 from src.agent.orchestrator import ORCH_PROMPT_VERSION, make_input
-from src.agent.semantic_analyzer import PROMPT_VERSION, SemanticAnalyzer, make_request
+from src.agent.semantic_analyzer import SemanticAnalyzer, make_request, prompt_version_from_config
 from src.agent.shortlister import shortlist
 from src.contracts import (DANTE_W, BuildState, CandidateTest, ChangedFile, DiffSummary, FinalRanking,
                            MethodSpec, validate)
@@ -200,8 +200,9 @@ def _router_relevance(cfg, build, tests, df_tfidf, comps, ctx, source):
         raise ValueError(f"relevance source {source!r} needs a relevance_provider")
     llm = cfg["llm"]
     diff = diff_text_for_llm(build)
+    version = prompt_version_from_config(cfg)
     reqs = [make_request(build.key, t, diff, build.source_texts.get(t, ""), llm["max_diff_chars"],
-                         llm["max_test_chars"]) for t in tests]
+                         llm["max_test_chars"], prompt_version=version) for t in tests]
     dante_order = df_tfidf.sort_values(by="dante_cch_score", ascending=False).index.tolist()
     log_path = repo_path(cfg["paths"]["logs_dir"]) / "fallbacks.jsonl"
     router = FallbackRouter.from_config(SemanticAnalyzer(provider, trace=ctx.trace, run_id=ctx.run_id), cfg,
@@ -209,7 +210,7 @@ def _router_relevance(cfg, build, tests, df_tfidf, comps, ctx, source):
     n0 = _n_calls(provider)
     res = router.run(build.key, reqs, dante_order)
     rows = [{"build": build.key, "relevance_source": source, "test": r.test, "relevance": r.relevance,
-             "confidence": r.confidence, "reason": r.reason, "prompt_version": PROMPT_VERSION,
+             "confidence": r.confidence, "reason": r.reason, "prompt_version": version,
              "fell_back": res.fell_back} for r in res.responses]
     return RelevanceResult(source, dict(res.relevance), {r.test: r.reason for r in res.responses}, rows,
                            list(res.fallbacks), res.fell_back, _cost(_calls_since(provider, n0)))
@@ -500,7 +501,7 @@ def run_builds(cfg, loader, eval_rows, specs, budgets, comps, ctx, config_file="
     meta = {
         "run_id": ctx.run_id, "experiment": ctx.experiment, "split": ctx.split, "seed": ctx.seed,
         "git_commit": git_commit(), "model": model,
-        "prompt_versions": {"relevance": PROMPT_VERSION, "orchestrator": ORCH_PROMPT_VERSION,
+        "prompt_versions": {"relevance": prompt_version_from_config(cfg), "orchestrator": ORCH_PROMPT_VERSION,
                             "explainer": getattr(comps.explainer, "prompt_version",
                                                  cfg["explainer"]["prompt_version"]),
                             "single_call": getattr(comps.single_call, "prompt_version",

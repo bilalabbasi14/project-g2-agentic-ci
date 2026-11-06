@@ -96,12 +96,17 @@ class RunContext:
     results_dir: Path
     trace: Any = field(default_factory=NullTrace)       # TraceLogger or NullTrace
     explainer_enabled: bool = False                     # seed in cfg["eval"]["explainer_seeds"]
+    file_suffix: str = ""                               # ".shard0" etc.: one set of files per process
 
     @classmethod
-    def create(cls, cfg, run_id, experiment, split, seed, results_dir, trace=None):
+    def create(cls, cfg, run_id, experiment, split, seed, results_dir, trace=None, file_suffix=""):
         return cls(run_id=run_id, experiment=experiment, split=split, seed=seed,
                    results_dir=Path(results_dir), trace=trace or NullTrace(),
-                   explainer_enabled=seed in cfg["eval"]["explainer_seeds"])
+                   explainer_enabled=seed in cfg["eval"]["explainer_seeds"], file_suffix=file_suffix)
+
+    def file(self, stem, ext="csv"):
+        """<run_dir>/<stem><file_suffix>.<ext>, e.g. per_build.shard0.csv."""
+        return self.run_dir / f"{stem}{self.file_suffix}.{ext}"
 
     @property
     def run_dir(self):
@@ -441,14 +446,14 @@ def _write_build_outputs(ctx, bid, result, rows, rel, decisions, explanation_row
     d = ctx.run_dir
     (d / "runs").mkdir(parents=True, exist_ok=True)
     (d / "runs" / f"{bid}.json").write_text(json.dumps(result, indent=2, default=str), encoding="utf-8")
-    _append_csv(d / "per_build.csv", PER_BUILD_COLUMNS, rows)
-    _append_csv(d / "llm_relevance.csv", LLM_RELEVANCE_COLUMNS, [x for r in rel.values() for x in r.rows])
-    _append_csv(d / "orchestrator_decisions.csv", DECISION_COLUMNS, [
+    _append_csv(ctx.file("per_build"), PER_BUILD_COLUMNS, rows)
+    _append_csv(ctx.file("llm_relevance"), LLM_RELEVANCE_COLUMNS, [x for r in rel.values() for x in r.rows])
+    _append_csv(ctx.file("orchestrator_decisions"), DECISION_COLUMNS, [
         {"build": bid, "relevance_source": s, "w": dec.w, "confidence": dec.confidence, "source": dec.source,
          "steps": dec.steps, "llm_calls": dec.llm_calls, "tool_calls": len(dec.tool_calls), "reason": dec.reason,
          "fallback_reason": dec.fallback.reason if dec.fallback else None}
         for s, dec in decisions.items() if dec is not None])
-    _append_csv(d / "explanations.csv", EXPLANATION_COLUMNS, explanation_rows)
+    _append_csv(ctx.file("explanations"), EXPLANATION_COLUMNS, explanation_rows)
 
 
 # ---------------------------------------------------------------- the run ----
@@ -463,20 +468,34 @@ def git_commit():
         return "unknown"
 
 
-def run_builds(cfg, loader, eval_rows, specs, budgets, comps, ctx, config_file="config.yaml", host=None):
+def count_fallbacks(result):
+    """Relevance and orchestrator fallbacks of one run_build result."""
+    n = sum(len(r["fallbacks"]) for r in result["relevance"].values())
+    return n + sum(1 for d in result["decisions"].values() if d and d.get("fallback"))
+
+
+def run_builds(cfg, loader, eval_rows, specs, budgets, comps, ctx, config_file="config.yaml", host=None,
+               progress=None, extra_meta=None):
     """Run every build; a build that raises is logged and recorded in failed_builds.
-    Writes run_meta.json and returns it."""
+    progress(i, n, build, seconds, fallbacks, error) is called after each build.
+    Writes run_meta<file_suffix>.json and returns it."""
     started = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    eval_rows = list(eval_rows)
     failed = []
     n = 0
     for e in eval_rows:
         n += 1
         key = getattr(e, "key", None) or f"{e.pr_name}_build{e.build_id}"
+        t0 = time.perf_counter()
         try:
-            run_build(cfg, loader, e, specs, budgets, comps, ctx)
+            res = run_build(cfg, loader, e, specs, budgets, comps, ctx)
+            if progress:
+                progress(n, len(eval_rows), key, time.perf_counter() - t0, count_fallbacks(res), None)
         except Exception as ex:   # one bad build must not stop the run
             log.exception("build %s failed", key)
             failed.append({"build": key, "error": f"{type(ex).__name__}: {ex}"})
+            if progress:
+                progress(n, len(eval_rows), key, time.perf_counter() - t0, 0, failed[-1]["error"])
     model = getattr(comps.relevance_provider, "model", None) or cfg["llm"]["model"]
     meta = {
         "run_id": ctx.run_id, "experiment": ctx.experiment, "split": ctx.split, "seed": ctx.seed,
@@ -489,7 +508,8 @@ def run_builds(cfg, loader, eval_rows, specs, budgets, comps, ctx, config_file="
         "methods": [s.name for s in specs], "budgets": list(budgets), "config_file": config_file,
         "started": started, "finished": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "n_builds": n, "failed_builds": failed, "host": host or socket.gethostname(),
+        **(extra_meta or {}),
     }
     ctx.run_dir.mkdir(parents=True, exist_ok=True)
-    (ctx.run_dir / "run_meta.json").write_text(json.dumps(meta, indent=2), encoding="utf-8")
+    ctx.file("run_meta", "json").write_text(json.dumps(meta, indent=2), encoding="utf-8")
     return meta

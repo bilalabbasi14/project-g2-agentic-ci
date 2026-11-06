@@ -5,8 +5,8 @@ import pandas as pd
 import pytest
 
 from src.agent.llm_provider import LLMTimeout, MockProvider
-from src.agent.orchestrator import (FEATURE_DOCS, FORCED_FINAL, ORCH_PROMPT_VERSION, LLMOrchestrator,
-                                    build_features, make_input)
+from src.agent.orchestrator import (FEATURE_DOCS, FORCED_FINAL, FORCED_FINAL_CALLS, ORCH_PROMPT_VERSION,
+                                    LLMOrchestrator, build_features, make_input)
 import inspect
 
 from src.contracts import DANTE_W, validate
@@ -168,6 +168,7 @@ def test_tool_limit_forces_final_and_caps_calls():
     prompts = o.provider.prompts
     assert len(d.tool_calls) == 4
     assert all(FORCED_FINAL not in p for p in prompts[:4]) and all(FORCED_FINAL in p for p in prompts[4:])
+    assert not any(FORCED_FINAL_CALLS in p for p in prompts)
     assert len(prompts) == d.llm_calls == 6 <= o.max_llm_calls
     assert d.source == "fallback" and d.fallback.reason == "schema_violation"
 
@@ -182,6 +183,9 @@ def test_hard_limit_with_retries_everywhere():
     o = _orch(["bad", tool()])
     d = o.decide(_input(), _tools(), "run1")
     assert d.llm_calls <= o.max_llm_calls == 6 and len(o.provider.prompts) == d.llm_calls
+    # forced by the call limit after fewer than 4 tools: the prompt says so, not "Tool limit reached"
+    assert len(d.tool_calls) < 4 and FORCED_FINAL_CALLS in o.provider.prompts[-1]
+    assert FORCED_FINAL not in o.provider.prompts[-1]
     validate(d.to_dict(), "orchestrator_decision")
 
 

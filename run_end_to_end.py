@@ -25,6 +25,7 @@ import pandas as pd
 from src.agent.llm_provider import MockProvider, make_provider
 from src.dante.compare_stored import load_stored
 from src.data.loader import LRTSLoader
+from src.data.source_cache import cache_dir_from_config
 from src.data.sources import SourceRepo
 from src.eval.stored import solution_metrics
 from src.pipeline import Components, RunContext, load_method_specs, run_build as pipeline_run_build
@@ -130,7 +131,8 @@ def main():
     runs = repo_path(p["results_dir"]) / "runs"
     logs.mkdir(parents=True, exist_ok=True)
     runs.mkdir(parents=True, exist_ok=True)
-    loader = LRTSLoader(p["lrts_root"], cfg["project"], SourceRepo(p["repo_clone"], p["repo_url"]))
+    loader = LRTSLoader(p["lrts_root"], cfg["project"], SourceRepo(p["repo_clone"], p["repo_url"]),
+                        source_cache_dir=cache_dir_from_config(cfg))
     ev = pd.read_csv(repo_path(p["eval_builds"]))
     targets = ev[ev["phase1_subset"] == 1] if args.subset else ev[ev["key"] == args.build]
     if targets.empty:

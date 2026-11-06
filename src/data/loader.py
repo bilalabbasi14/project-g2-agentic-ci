@@ -7,6 +7,11 @@ Layout (checked on the extracted dataset; there is no "artifact/" folder):
     <lrts_root>/shadata/<project>/diff/<pr_name>_build<id>.diff
 test_class.csv columns: testclass, duration, outcome (1 = fail), last_outcome.
 LRTS has no per-test flaky label in these files.
+
+Test sources come from the source cache (src/data/source_cache.py) when
+`source_cache_dir` is set and the build's cache file exists; otherwise from the
+git clone (`source_repo`); otherwise there are none. Both sources give the same
+BuildData.
 """
 import os
 import re
@@ -16,6 +21,7 @@ from typing import Dict, List, Optional
 import pandas as pd
 
 from src.dante.tokenize import clean_and_tokenize_source, find_test_source_path
+from src.data.source_cache import cache_file, read_cache
 from src.data.splitter import history_window, previous_builds
 from src.tools.diff_reader import split_diff
 from src.tools.history_retrieval import open_test_class_csv, resolve_test_class_file
@@ -82,10 +88,11 @@ class HistoryData:
 
 
 class LRTSLoader:
-    def __init__(self, lrts_root, project, source_repo=None):
+    def __init__(self, lrts_root, project, source_repo=None, source_cache_dir=None):
         self.root = lrts_root
         self.project = project
         self.repo = source_repo
+        self.source_cache_dir = source_cache_dir
         self.meta = self._load_metadata()
         self._cache = {}
 
@@ -159,7 +166,21 @@ class LRTSLoader:
 
         sources_ok = False
         texts = {}
-        if self.repo is not None and self.repo.ensure_commit(row['build_head_sha']):
+        cached = cache_file(self.source_cache_dir, row['key'])
+        if cached is not None:
+            entry = read_cache(cached)
+            sources_ok = bool(entry["sources_available"])
+            for t in cases.values():
+                src = entry["sources"].get(t.name)
+                if src is None:
+                    continue
+                t.source_path = src["path"]
+                code = src["text"]
+                if code:
+                    t.tokens = clean_and_tokenize_source(code, os.path.splitext(t.source_path)[1])[0]
+                    if keep_sources:
+                        texts[t.name] = code
+        elif self.repo is not None and self.repo.ensure_commit(row['build_head_sha']):
             sources_ok = True
             tree = self.repo.tree(row['build_head_sha'])
             paths = list(tree)

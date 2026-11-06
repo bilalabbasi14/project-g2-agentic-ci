@@ -211,3 +211,69 @@ def test_failing_build_is_recorded_and_run_continues(tmp_path):
 def test_decisions_validate(tmp_path):
     _, _, res = _run(tmp_path, specs=load_method_specs(names=["Agent-weighted"]))
     validate(res["decisions"]["llm_shortlist"], "orchestrator_decision")
+
+
+class RecordingExplainer(FakeExplainer):
+    """Records the score-table columns of every explain call."""
+
+    def __init__(self):
+        super().__init__()
+        self.columns = []
+
+    def explain(self, build_id, budget_fraction, df, *rest):
+        self.columns.append(list(df.columns))
+        return super().explain(build_id, budget_fraction, df, *rest)
+
+
+class RecordingOrchestrator(FakeOrchestrator):
+    def __init__(self):
+        super().__init__(w=0.5)
+        self.inputs = []
+
+    def decide(self, inp, tools, run_id):
+        self.inputs.append(inp.to_dict())
+        return super().decide(inp, tools, run_id)
+
+
+class RecordingSingleCall(FakeSingleCallScorer):
+    def __init__(self):
+        super().__init__(0.5)
+        self.args = []
+
+    def score(self, build_id, diff_text, candidates, run_id):
+        self.args.append((build_id, diff_text, list(candidates), run_id))
+        return super().score(build_id, diff_text, candidates, run_id)
+
+
+def test_no_component_sees_target_outcomes(tmp_path):
+    ex, orch, single = RecordingExplainer(), RecordingOrchestrator(), RecordingSingleCall()
+    _, ctx, res = _run(tmp_path, comps=_comps(explainer=ex, orch=orch, single=single), in_phase1=True)
+    # explainer: called for "Full system" at every budget, never with the outcome column
+    assert len(ex.columns) == len(BUDGETS)
+    assert all("actual_outcome" not in cols for cols in ex.columns)
+    assert all("history_score" in cols and "dante_cch_score" in cols for cols in ex.columns)
+    # orchestrator input: features and shortlist items carry no outcome key
+    assert orch.inputs and all("outcome" not in json.dumps(i) for i in orch.inputs)
+    for i in orch.inputs:
+        assert set(i["shortlist"][0]) == {"test", "history_score", "tfidf_relevance", "llm_relevance", "duration"}
+    # single-call scorer: only the build id, the diff and the candidate names
+    assert single.args and all(isinstance(c, str) for _, _, cands, _ in single.args for c in cands)
+    # metrics still use the ground truth, computed separately
+    rows = _csv(ctx.run_dir / "per_build.csv")
+    assert {r["failing"] for r in rows} == {"2"} and res["failing"] == 2
+
+
+def test_failed_build_writes_no_rows(tmp_path):
+    class BrokenExplainer(FakeExplainer):
+        def explain(self, *a):
+            raise RuntimeError("explainer broke mid-build")
+
+    cfg = _cfg(tmp_path)
+    ctx = _ctx(cfg, tmp_path)
+    build, hist = _fixture()
+    meta = run_builds(cfg, FakeLoader(build, hist), [_row()], load_method_specs(), BUDGETS,
+                      _comps(explainer=BrokenExplainer()), ctx, host="test")
+    assert [f["build"] for f in meta["failed_builds"]] == ["PR-1_build1"]
+    d = ctx.run_dir
+    assert not (d / "per_build.csv").exists() and not (d / "llm_relevance.csv").exists()
+    assert not (d / "runs" / "PR-1_build1.json").exists()          # not marked complete either

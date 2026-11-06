@@ -15,6 +15,7 @@ The column lists below are fixed; later issues read these files.
 import csv
 import json
 import logging
+import os
 import socket
 import subprocess
 import time
@@ -44,6 +45,10 @@ log = logging.getLogger(__name__)
 
 METHODS_FILE = "experiments/methods.yaml"
 STORED_METHOD = "DANTE-CCH (stored)"
+# Columns of the DANTE score table that hold the target build's ground truth. They are
+# used only for metrics (`failing`) and are removed from anything handed to a component
+# (PROJECT_CONTEXT §6.3 rule 2).
+OUTCOME_COLUMNS = ("actual_outcome",)
 LLM_SOURCES = ("llm_shortlist", "llm_all_individual", "llm_single_call")
 # weight modes that rank with an existing src.dante method instead of a weight
 RANK_METHOD = {"random": "Random", "history_only": "History-only", "relevance_only": "TF-IDF-only"}
@@ -121,6 +126,11 @@ class Components:
     single_call: Any = None                     # SingleCallScorerLike
     tuned_weights: Dict[str, Any] = field(default_factory=dict)
     stored_loader: Optional[Callable] = None    # (cfg, build_name, budget, strategy) -> stored solution dict
+
+
+def without_outcomes(df):
+    """Copy of a score table without the target build's outcome columns."""
+    return df.drop(columns=[c for c in OUTCOME_COLUMNS if c in df.columns])
 
 
 # ------------------------------------------------------------ cost helpers ----
@@ -301,7 +311,7 @@ def run_build(cfg, loader, eval_row, specs, budgets, comps, ctx) -> dict:
         o_provider = getattr(comps.orchestrator, "provider", None)
         n0 = _n_calls(o_provider)
         llm_rel = rel[src].relevance if src in LLM_SOURCES else {}
-        inp = make_input(build, hist, df_tfidf, short, llm_rel, src, budgets)
+        inp = make_input(build, hist, without_outcomes(df_tfidf), short, llm_rel, src, budgets)
         dec = comps.orchestrator.decide(inp, ToolRegistry.for_build(hist.frames, build.diff_files), ctx.run_id)
         validate(dec.to_dict(), "orchestrator_decision")
         decisions[src] = dec
@@ -395,7 +405,8 @@ def run_build(cfg, loader, eval_row, specs, budgets, comps, ctx) -> dict:
                                                         "selected": sel})
             expl = []
             if spec.explainer and ctx.explainer_enabled and comps.explainer is not None:
-                expl = comps.explainer.explain(bid, b, df_spec, sel, order, durations, budget_s, build.diff_files,
+                expl = comps.explainer.explain(bid, b, without_outcomes(df_spec), sel, order, durations, budget_s,
+                                               build.diff_files,
                                                reasons, history_tool, ctx.run_id)
                 for e in expl:
                     validate(e.to_dict(), "explanation_record")
@@ -443,9 +454,10 @@ def _row(ctx, bid, b, spec, w, ranking_source, n_cand, n_fail, m, total_all, cos
 
 
 def _write_build_outputs(ctx, bid, result, rows, rel, decisions, explanation_rows):
+    """Called only after the whole build has finished, so a build that fails partway
+    writes no rows. runs/<build>.json is written last, through a temporary file: it
+    marks the build as complete (the runner's --skip-existing relies on it)."""
     d = ctx.run_dir
-    (d / "runs").mkdir(parents=True, exist_ok=True)
-    (d / "runs" / f"{bid}.json").write_text(json.dumps(result, indent=2, default=str), encoding="utf-8")
     _append_csv(ctx.file("per_build"), PER_BUILD_COLUMNS, rows)
     _append_csv(ctx.file("llm_relevance"), LLM_RELEVANCE_COLUMNS, [x for r in rel.values() for x in r.rows])
     _append_csv(ctx.file("orchestrator_decisions"), DECISION_COLUMNS, [
@@ -454,6 +466,10 @@ def _write_build_outputs(ctx, bid, result, rows, rel, decisions, explanation_row
          "fallback_reason": dec.fallback.reason if dec.fallback else None}
         for s, dec in decisions.items() if dec is not None])
     _append_csv(ctx.file("explanations"), EXPLANATION_COLUMNS, explanation_rows)
+    (d / "runs").mkdir(parents=True, exist_ok=True)
+    tmp = d / "runs" / f"{bid}.json.tmp"
+    tmp.write_text(json.dumps(result, indent=2, default=str), encoding="utf-8")
+    os.replace(tmp, d / "runs" / f"{bid}.json")
 
 
 # ---------------------------------------------------------------- the run ----

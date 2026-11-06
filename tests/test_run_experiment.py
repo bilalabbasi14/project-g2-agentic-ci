@@ -209,3 +209,20 @@ def test_rerun_removes_the_stale_trace(tmp_path):
     assert events and all("stale" not in e for e in events)
     assert events[0]["step"] == 1                                   # one clean trajectory from step 1
     assert any(ln.startswith("removed stale trace") for ln in lines)
+
+
+def test_merge_drops_failed_builds_that_later_succeeded(tmp_path):
+    run_dir = tmp_path / "run"
+    run_dir.mkdir()
+    cols = merge_shards.PER_BUILD_COLUMNS
+    row = {c: "" for c in cols}
+    pd.DataFrame([{**row, "build": "B1", "method": "DANTE-CCH", "budget": "0.1"}], columns=cols).to_csv(
+        run_dir / "per_build.shard0.csv", index=False)
+    meta = {"run_id": "r", "started": "2026-11-06T10:00:00+00:00", "finished": "2026-11-06T10:05:00+00:00",
+            "git_commit": "abc", "n_builds": 2, "shard": [0, 1], "skipped_existing": [],
+            "failed_builds": [{"build": "B1", "error": "timeout in an earlier attempt"},
+                              {"build": "B2", "error": "RuntimeError: still broken"}]}
+    (run_dir / "run_meta.shard0.json").write_text(json.dumps(meta), encoding="utf-8")
+    merge_shards.merge_run(run_dir)
+    merged = json.loads((run_dir / "run_meta.json").read_text(encoding="utf-8"))
+    assert [f["build"] for f in merged["failed_builds"]] == ["B2"]   # B1 now has rows, so it is not failed

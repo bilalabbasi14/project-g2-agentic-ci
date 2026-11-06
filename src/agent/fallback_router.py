@@ -21,6 +21,7 @@ from pathlib import Path
 from typing import Dict, List, Optional
 
 from src.contracts import FallbackRecord, RelevanceResponse
+from src.obs.trace import NullTrace
 
 log = logging.getLogger(__name__)
 
@@ -44,7 +45,8 @@ class RouterResult:
 
 
 class FallbackRouter:
-    def __init__(self, analyzer, min_confidence=0.0, scope="build", log_path=None, max_retries=0):
+    def __init__(self, analyzer, min_confidence=0.0, scope="build", log_path=None, max_retries=0,
+                 trace=None, run_id=None):
         if scope not in ("build", "test"):
             raise ValueError("scope must be 'build' or 'test'")
         self.analyzer = analyzer
@@ -52,12 +54,15 @@ class FallbackRouter:
         self.scope = scope
         self.log_path = Path(log_path) if log_path else None
         self.max_retries = max_retries
+        self.trace = trace or NullTrace()   # one "fallback" trace event per FallbackRecord
+        self.run_id = run_id
 
     @classmethod
-    def from_config(cls, analyzer, cfg, log_path=None):
+    def from_config(cls, analyzer, cfg, log_path=None, trace=None, run_id=None):
         fb = cfg["fallback"]
         max_retries = (cfg.get("llm_p2") or {}).get("max_retries", 0)
-        return cls(analyzer, fb["min_confidence"], fb["scope"], log_path, max_retries)
+        return cls(analyzer, fb["min_confidence"], fb["scope"], log_path, max_retries,
+                   trace=trace, run_id=run_id)
 
     def _call(self, request):
         """Return (response, None, attempts) or (None, (reason, detail), attempts)."""
@@ -72,6 +77,7 @@ class FallbackRouter:
         rec = FallbackRecord(build_id=build_id, reason=reason, detail=detail[:300], test=test)
         result.fallbacks.append(rec)
         log.warning("fallback %s attempts=%d", rec.to_dict(), attempts)
+        self.trace.event(build_id, "fallback_router", "fallback", rec.to_dict())
         if self.log_path:
             self.log_path.parent.mkdir(parents=True, exist_ok=True)
             with open(self.log_path, "a", encoding="utf-8") as f:

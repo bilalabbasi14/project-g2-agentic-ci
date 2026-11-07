@@ -1,0 +1,41 @@
+{
+  "run_id": "DEV_prompt_v2",
+  "experiment": "DEV",
+  "split": "dev",
+  "seed": 1,
+  "git_commit": "fbe1b2b86e8fe9ba65ef4ad420aca0af6713f4e0",
+  "model": "qwen2.5-coder:7b",
+  "prompt_versions": {
+    "relevance": "v2",
+    "orchestrator": "o1",
+    "explainer": "e1",
+    "single_call": "sc1"
+  },
+  "methods": [
+    "LLM-relevance",
+    "DANTE-CCH"
+  ],
+  "budgets": [
+    0.05,
+    0.1,
+    0.2
+  ],
+  "config_file": "config_kaggle.yaml",
+  "started": "2026-11-07T02:11:00+00:00",
+  "finished": "2026-11-07T02:15:46+00:00",
+  "n_builds": 10,
+  "failed_builds": [],
+  "host": "kaggle-t4x2",
+  "provider": "ollama",
+  "skipped_existing": [],
+  "shards": [
+    [
+      0,
+      2
+    ],
+    [
+      1,
+      2
+    ]
+  ]
+}

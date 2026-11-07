@@ -1,101 +1,101 @@
 item_id,rating,note
-R001,,
-R002,,
-R003,,
-R004,,
-R005,,
-R006,,
-R007,,
-R008,,
-R009,,
-R010,,
-R011,,
-R012,,
-R013,,
-R014,,
-R015,,
-R016,,
-R017,,
-R018,,
-R019,,
-R020,,
-R021,,
-R022,,
-R023,,
-R024,,
-R025,,
-R026,,
-R027,,
-R028,,
-R029,,
-R030,,
-R031,,
-R032,,
-R033,,
-R034,,
-R035,,
-R036,,
-R037,,
-R038,,
-R039,,
-R040,,
-R041,,
-R042,,
-R043,,
-R044,,
-R045,,
-R046,,
-R047,,
-R048,,
-R049,,
-R050,,
-R051,,
-R052,,
-R053,,
-R054,,
-R055,,
-R056,,
-R057,,
-R058,,
-R059,,
-R060,,
-R061,,
-R062,,
-R063,,
-R064,,
-R065,,
-R066,,
-R067,,
-R068,,
-R069,,
-R070,,
-R071,,
-R072,,
-R073,,
-R074,,
-R075,,
-R076,,
-R077,,
-R078,,
-R079,,
-R080,,
-R081,,
-R082,,
-R083,,
-R084,,
-R085,,
-R086,,
-R087,,
-R088,,
-R089,,
-R090,,
-R091,,
-R092,,
-R093,,
-R094,,
-R095,,
-R096,,
-R097,,
-R098,,
-R099,,
-R100,,
+R001,sound,
+R002,sound,
+R003,sound,
+R004,sound,
+R005,unsound,claims 0.008 s fits in 0.0 s
+R006,partly,risk claim weak; no failures and zero relevance
+R007,sound,
+R008,sound,
+R009,sound,
+R010,sound,
+R011,sound,
+R012,sound,
+R013,unsound,says 0.005 s needed; duration is 0.006 s
+R014,unsound,says 0.097 s is less than 0.001 s
+R015,unsound,claims enough budget; 2.429 s exceeds 2.114 s
+R016,unsound,claims 0.009 s fits in 0.006 s
+R017,sound,
+R018,sound,
+R019,unsound,says 0.006 s is less than 0.002 s
+R020,sound,
+R021,sound,
+R022,unsound,claims 0.049 s fits in 0.003 s
+R023,sound,
+R024,sound,
+R025,sound,
+R026,sound,
+R027,unsound,says 0.062 s is less than 0.033 s
+R028,unsound,calls 0.115 s negligible vs 0.02 s
+R029,unsound,calls 0.043 s negligible vs 0.002 s
+R030,sound,
+R031,sound,
+R032,unsound,says 0.057 s is less than 0.004 s
+R033,unsound,claims 35.628 s is within 10.85 s
+R034,unsound,calls 0.32 s negligible vs 0.191 s
+R035,sound,
+R036,partly,risk claim weak; no failures and zero relevance
+R037,partly,omits 7 failures in 97 runs; reasonableness is weak
+R038,sound,
+R039,sound,
+R040,unsound,claims 0.006 s fits in 0.0 s
+R041,sound,
+R042,partly,omits 4 failures in 94 runs when calling the skip reasonable
+R043,sound,
+R044,unsound,0.022 s is not negligible vs 0.001 s remaining
+R045,sound,
+R046,sound,
+R047,unsound,says 0.011 s is less than 0.0 s
+R048,sound,
+R049,sound,
+R050,sound,
+R051,sound,
+R052,sound,
+R053,unsound,says 0.043 s is less than 0.022 s
+R054,sound,
+R055,unsound,0.003 s is not negligible vs 0.001 s remaining
+R056,partly,risk claim weak; no failures and zero relevance
+R057,unsound,claims 0.118 s fits in 0.0 s
+R058,sound,
+R059,unsound,confuses total budget needed with test duration
+R060,partly,3 failures in 97 runs make the reasonable label debatable
+R061,unsound,claims 0.058 s fits in 0.019 s
+R062,partly,risk claim weak; no failures and zero relevance
+R063,unsound,claims 0.068 s fits in 0.0 s
+R064,partly,displayed values match but skip reason says did_not_fit
+R065,sound,
+R066,sound,
+R067,sound,
+R068,sound,
+R069,sound,
+R070,sound,
+R071,sound,
+R072,sound,
+R073,sound,
+R074,sound,
+R075,sound,
+R076,unsound,claims 0.063 s fits in 0.015 s
+R077,sound,
+R078,sound,
+R079,partly,omits 4 failures in 100 runs when calling the skip reasonable
+R080,unsound,misstates required time and leftover budget
+R081,sound,
+R082,partly,3 failures in 97 runs make the reasonable label debatable
+R083,partly,3 failures in 97 runs make the reasonable label debatable
+R084,unsound,0.008 s is not negligible vs 0.001 s remaining
+R085,sound,
+R086,sound,
+R087,unsound,says 0.061 s is less than 0.003 s
+R088,sound,
+R089,unsound,says 0.007 s is less than 0.005 s
+R090,unsound,says 0.055 s is less than 0.001 s
+R091,sound,
+R092,sound,
+R093,partly,4.1 percent failure rate weakens the reasonable conclusion
+R094,partly,one failure in 100 runs weakly supports the flaky claim
+R095,unsound,claims 0.006 s fits in 0.0 s
+R096,sound,
+R097,sound,
+R098,sound,
+R099,sound,
+R100,sound,

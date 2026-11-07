@@ -1,0 +1,5 @@
+# E6 Efficiency and reliability: no run of its own. P2-19 computes it from the cost
+# columns (llm_calls, llm_latency_s, tokens, tool_calls, decision_latency_s,
+# explainer_*, time_saved_s) of these runs' per_build.csv files.
+experiment: E6
+runs: [E1, E3, E5, E5_noshortlist]

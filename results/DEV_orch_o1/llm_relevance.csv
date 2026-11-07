@@ -1,0 +1,170 @@
+build,relevance_source,test,relevance,confidence,reason,prompt_version,fell_back
+PR-1361_build1,llm_shortlist,org.apache.karaf.event.service.EventCollectorTest,0.0,1.0,The test class does not interact with the `ConsoleSessionImpl` class or its methods.,v1,False
+PR-1361_build1,llm_shortlist,org.apache.karaf.itests.ConfigManagedServiceFactoryTest,0.1,0.8,The test class does not appear to interact with the `ConsoleSessionImpl` class or its methods.,v1,False
+PR-1361_build1,llm_shortlist,org.apache.karaf.itests.EquinoxTest,0.0,1.0,The test class does not appear to interact with the `ConsoleSessionImpl` class or its methods.,v1,False
+PR-1361_build1,llm_shortlist,org.apache.karaf.itests.JaasTest,0.1,0.8,The test class does not appear to interact with the `ConsoleSessionImpl` class or its methods.,v1,False
+PR-1361_build1,llm_shortlist,org.apache.karaf.itests.PackageTest,0.1,0.9,The test class does not appear to interact with the `ConsoleSessionImpl` class or its methods.,v1,False
+PR-1361_build1,llm_shortlist,org.apache.karaf.itests.SystemTest,0.1,0.9,The test class does not appear to interact with the `ConsoleSessionImpl` class or its methods.,v1,False
+PR-1361_build1,llm_shortlist,org.apache.karaf.itests.XATest,0.1,0.8,The test class does not appear to interact with the `ConsoleSessionImpl` class or its methods.,v1,False
+PR-1361_build1,llm_shortlist,org.apache.karaf.itests.examples.JdbcExampleTest,0.1,0.8,The test class does not appear to interact with the `ConsoleSessionImpl` class or its methods.,v1,False
+PR-1361_build1,llm_shortlist,org.apache.karaf.itests.examples.JpaExampleTest,0.1,0.8,The test class does not appear to interact with the `ConsoleSessionImpl` class or its methods.,v1,False
+PR-1361_build1,llm_shortlist,org.apache.karaf.itests.examples.MBeanExampleTest,0.0,1.0,The test class does not interact with the `ConsoleSessionImpl` class or its methods.,v1,False
+PR-1361_build1,llm_shortlist,org.apache.karaf.itests.examples.RestExampleTest,0.1,0.9,The test class does not appear to interact with the `ConsoleSessionImpl` class or its methods.,v1,False
+PR-1361_build1,llm_shortlist,org.apache.karaf.itests.examples.ServletExampleTest,0.1,0.9,The test class does not appear to interact with the `ConsoleSessionImpl` class or its methods.,v1,False
+PR-1361_build1,llm_shortlist,org.apache.karaf.itests.ssh.BundleSshCommandSecurityTest,0.2,0.8,The test class does not appear to interact with the `ConsoleSessionImpl` class or its methods.,v1,False
+PR-1361_build1,llm_shortlist,org.apache.karaf.itests.ssh.ConfigSshCommandSecurityTest,0.1,0.9,The test class does not appear to interact with the `ConsoleSessionImpl` class or its methods.,v1,False
+PR-1361_build1,llm_shortlist,org.apache.karaf.itests.ssh.KarSshCommandSecurityTest,0.2,0.8,The test class does not appear to interact with the `ConsoleSessionImpl` class or its methods.,v1,False
+PR-1361_build1,llm_shortlist,org.apache.karaf.itests.ssh.ShellCommandSecurityTest,0.2,0.8,The test class does not appear to directly interact with the `ConsoleSessionImpl` class or its methods.,v1,False
+PR-1361_build1,llm_shortlist,org.apache.karaf.packages.core.internal.filter.FilterParserTest,0.0,1.0,The test class does not involve any code related to the changes made in ConsoleSessionImpl.java.,v1,False
+PR-1361_build1,llm_shortlist,org.apache.karaf.shell.ssh.keygenerator.OpenSSHGeneratorKeyFileProviderTest,0.0,1.0,The test class does not involve any code related to the change in ConsoleSessionImpl.java.,v1,False
+PR-1361_build1,llm_shortlist,org.apache.karaf.shell.support.ShellUtilTest,0.0,1.0,The test class does not interact with the `ConsoleSessionImpl` class or its methods.,v1,False
+PR-1363_build1,llm_shortlist,org.apache.karaf.audit.logger.EventLoggerTest,0.0,1.0,The test class does not interact with the OpenSSHKeyPairProvider class or its methods.,v1,False
+PR-1363_build1,llm_shortlist,org.apache.karaf.config.core.impl.ConfigMBeanImplTest,0.0,1.0,The test class does not interact with the OpenSSHKeyPairProvider or any related classes.,v1,False
+PR-1363_build1,llm_shortlist,org.apache.karaf.features.extension.BundleWiresTest,0.0,1.0,"The test class does not involve file operations or key generation, which are the primary changes in the provided code snippet.",v1,False
+PR-1363_build1,llm_shortlist,org.apache.karaf.itests.ConfigManagedServiceFactoryTest,0.1,0.8,The test class does not appear to interact with the SSH key generation logic in the provided code change.,v1,False
+PR-1363_build1,llm_shortlist,org.apache.karaf.itests.EquinoxTest,0.0,1.0,The test class does not appear to interact with the OpenSSHKeyPairProvider class or its methods.,v1,False
+PR-1363_build1,llm_shortlist,org.apache.karaf.itests.ExternalConfigTest,0.1,0.8,The test class does not appear to interact with file permissions or key generation.,v1,False
+PR-1363_build1,llm_shortlist,org.apache.karaf.itests.JavaSecurityTest,0.2,0.8,The test class does not appear to directly interact with the OpenSSHKeyPairProvider class or its methods.,v1,False
+PR-1363_build1,llm_shortlist,org.apache.karaf.itests.LogTest,0.0,1.0,The test class does not interact with the OpenSSHKeyPairProvider class or its methods.,v1,False
+PR-1363_build1,llm_shortlist,org.apache.karaf.itests.OverrideConfigTest,0.0,1.0,The test class does not interact with file permissions or key generation.,v1,False
+PR-1363_build1,llm_shortlist,org.apache.karaf.itests.XATest,0.1,0.8,The test class does not appear to interact with SSH key generation or file permissions.,v1,False
+PR-1363_build1,llm_shortlist,org.apache.karaf.itests.examples.JdbcExampleTest,0.0,1.0,"The test class does not interact with the SSH key generation or file permissions, which are the parts of the code that were changed.",v1,False
+PR-1363_build1,llm_shortlist,org.apache.karaf.itests.examples.JpaExampleTest,0.0,1.0,The test class does not interact with the SSH key generation or file permissions.,v1,False
+PR-1363_build1,llm_shortlist,org.apache.karaf.itests.examples.MBeanExampleTest,0.0,1.0,The test class does not interact with the OpenSSHKeyPairProvider class or its methods.,v1,False
+PR-1363_build1,llm_shortlist,org.apache.karaf.itests.examples.RestExampleTest,0.0,1.0,The test class does not interact with SSH key generation or file permissions.,v1,False
+PR-1363_build1,llm_shortlist,org.apache.karaf.itests.examples.ServletExampleTest,0.0,1.0,"The test class does not interact with the SSH key generation or file permissions, which are the primary changes in the provided code snippet.",v1,False
+PR-1363_build1,llm_shortlist,org.apache.karaf.itests.ssh.BundleSshCommandSecurityTest,0.1,0.8,"The test class does not appear to interact with file permissions or key generation, which are the primary changes in the provided code snippet.",v1,False
+PR-1363_build1,llm_shortlist,org.apache.karaf.itests.ssh.ConfigSshCommandSecurityTest,0.1,0.8,The test class does not appear to interact with the file permissions or key generation logic in the changed code.,v1,False
+PR-1363_build1,llm_shortlist,org.apache.karaf.log.core.internal.SetLogLevelTest,0.0,1.0,"The test class does not interact with the SSH key generation or file permissions, which are the parts of the code that were changed.",v1,False
+PR-1363_build1,llm_shortlist,org.apache.karaf.main.MainTest,0.1,0.8,The test class does not appear to interact with the SSH key generation logic in OpenSSHKeyPairProvider.java.,v1,False
+PR-1363_build1,llm_shortlist,org.apache.karaf.shell.ssh.keygenerator.OpenSSHGeneratorKeyFileProviderTest,0.8,0.9,"The test class creates temporary key files and uses them to test key generation, which is related to the code change that modifies key file permissions.",v1,False
+PR-1368_build1,llm_shortlist,org.apache.karaf.config.command.EditCommandTest,0.1,0.9,The test class does not appear to interact with the newly added ConfigurationPID class.,v1,False
+PR-1368_build1,llm_shortlist,org.apache.karaf.features.internal.service.BootFeaturesInstallerTest,0.0,1.0,The test class does not interact with the newly added `ConfigurationPID` class.,v1,False
+PR-1368_build1,llm_shortlist,org.apache.karaf.itests.ConfigManagedServiceFactoryTest,0.1,0.8,The test class does not appear to interact with the newly added ConfigurationPID class.,v1,False
+PR-1368_build1,llm_shortlist,org.apache.karaf.itests.EquinoxTest,0.0,1.0,The test class does not appear to interact with the newly added ConfigurationPID class.,v1,False
+PR-1368_build1,llm_shortlist,org.apache.karaf.itests.ExternalConfigTest,0.1,0.9,The test class does not appear to interact with the newly added `ConfigurationPID` class.,v1,False
+PR-1368_build1,llm_shortlist,org.apache.karaf.itests.XATest,0.0,1.0,The test class does not appear to interact with the newly added `ConfigurationPID` class.,v1,False
+PR-1368_build1,llm_shortlist,org.apache.karaf.itests.examples.JdbcExampleTest,0.0,1.0,The test class does not interact with the newly added `ConfigurationPID` class.,v1,False
+PR-1368_build1,llm_shortlist,org.apache.karaf.itests.examples.JpaExampleTest,0.0,1.0,The test class does not interact with the newly added `ConfigurationPID` class.,v1,False
+PR-1368_build1,llm_shortlist,org.apache.karaf.itests.examples.RestExampleTest,0.0,1.0,The test class does not interact with the newly added `ConfigurationPID` class.,v1,False
+PR-1368_build1,llm_shortlist,org.apache.karaf.itests.examples.ServletExampleTest,0.0,1.0,The test class does not interact with the newly added `ConfigurationPID` class.,v1,False
+PR-1368_build1,llm_shortlist,org.apache.karaf.itests.ssh.BundleSshCommandSecurityTest,0.0,1.0,The test class does not interact with the ConfigurationPID class or its methods.,v1,False
+PR-1368_build1,llm_shortlist,org.apache.karaf.itests.ssh.ConfigSshCommandSecurityTest,0.0,1.0,The test class does not interact with the newly added ConfigurationPID class.,v1,False
+PR-1368_build1,llm_shortlist,org.apache.karaf.jaas.modules.ldap.LdapLoginModuleTest,0.0,1.0,The test class does not interact with the newly added ConfigurationPID class.,v1,False
+PR-1368_build1,llm_shortlist,org.apache.karaf.jpm.ProcessTest,0.0,1.0,The test class does not interact with the newly added ConfigurationPID class.,v1,False
+PR-1368_build1,llm_shortlist,org.apache.karaf.log.core.internal.SetLogLevelTest,0.0,1.0,The test class does not interact with the newly added ConfigurationPID class.,v1,False
+PR-1368_build1,llm_shortlist,org.apache.karaf.shell.impl.action.command.ActionMaskingCallbackTest,0.0,1.0,The test class does not interact with the newly added `ConfigurationPID` class.,v1,False
+PR-1368_build1,llm_shortlist,org.apache.karaf.shell.impl.console.parsing.ParsingTest,0.0,1.0,The test class does not interact with the newly added ConfigurationPID class.,v1,False
+PR-1368_build1,llm_shortlist,org.apache.karaf.shell.ssh.KarafJaasAuthenticatorTest,0.0,1.0,The test class does not interact with the newly added `ConfigurationPID` class.,v1,False
+PR-1368_build1,llm_shortlist,org.apache.karaf.util.BundleUtilsTest,0.0,1.0,The test class does not interact with the newly added `ConfigurationPID` class.,v1,False
+PR-1368_build1,llm_shortlist,org.apache.karaf.util.config.ConfigurationPIDTest,1.0,1.0,The test class directly tests the methods and functionalities introduced in the ConfigurationPID class.,v1,False
+PR-1375_build1,llm_shortlist,org.apache.karaf.config.command.UpdateCommandTest,0.2,0.8,The test class does not directly interact with the JsonConfigInstaller class or its methods.,v1,False
+PR-1375_build1,llm_shortlist,org.apache.karaf.event.command.EventSendCommandTest,0.0,1.0,The test class does not interact with the JsonConfigInstaller class or its methods.,v1,False
+PR-1375_build1,llm_shortlist,org.apache.karaf.features.internal.service.StateStorageTest,0.1,0.9,The test class does not appear to interact with the JsonConfigInstaller class or its methods.,v1,False
+PR-1375_build1,llm_shortlist,org.apache.karaf.features.management.codec.JmxFeatureTest,0.1,0.8,The test class does not appear to interact with the JsonConfigInstaller class or its methods.,v1,False
+PR-1375_build1,llm_shortlist,org.apache.karaf.itests.ConfigManagedServiceFactoryTest,0.2,0.8,The test class does not appear to interact with the JsonConfigInstaller class or its methods.,v1,False
+PR-1375_build1,llm_shortlist,org.apache.karaf.itests.ExternalConfigTest,0.2,0.8,The test class does not directly interact with the JsonConfigInstaller class or its methods.,v1,False
+PR-1375_build1,llm_shortlist,org.apache.karaf.itests.InstanceTest,0.1,0.9,The test class does not appear to interact with the JsonConfigInstaller class or its methods.,v1,False
+PR-1375_build1,llm_shortlist,org.apache.karaf.itests.JmsTest,0.0,1.0,The test class does not appear to interact with the JsonConfigInstaller class or its methods.,v1,False
+PR-1375_build1,llm_shortlist,org.apache.karaf.itests.SystemShutdownTest,0.0,1.0,The test class does not interact with the JsonConfigInstaller class or its methods.,v1,False
+PR-1375_build1,llm_shortlist,org.apache.karaf.itests.examples.ConfigExampleTest,0.2,0.8,The test class does not appear to interact with the JsonConfigInstaller class or its methods.,v1,False
+PR-1375_build1,llm_shortlist,org.apache.karaf.itests.examples.JdbcExampleTest,0.0,1.0,The test class does not appear to interact with the JsonConfigInstaller class or its methods.,v1,False
+PR-1375_build1,llm_shortlist,org.apache.karaf.itests.examples.JpaExampleTest,0.0,1.0,The test class does not appear to interact with the JsonConfigInstaller class or its methods.,v1,False
+PR-1375_build1,llm_shortlist,org.apache.karaf.itests.examples.RestExampleTest,0.1,0.9,The test class does not appear to interact with the JsonConfigInstaller class or its methods.,v1,False
+PR-1375_build1,llm_shortlist,org.apache.karaf.itests.examples.ServletExampleTest,0.0,1.0,The test class does not appear to interact with the JsonConfigInstaller class or its methods.,v1,False
+PR-1375_build1,llm_shortlist,org.apache.karaf.itests.ssh.ConfigSshCommandSecurityTest,0.1,0.9,The test class does not appear to interact with the JsonConfigInstaller class or its methods.,v1,False
+PR-1375_build1,llm_shortlist,org.apache.karaf.packages.core.internal.filter.FilterParserTest,0.0,1.0,"The test class does not involve any code related to JSON configuration or file handling, which are the primary changes in the provided code snippet.",v1,False
+PR-1375_build1,llm_shortlist,org.apache.karaf.profile.impl.PropertiesTest,0.1,0.8,The test class does not directly interact with the JsonConfigInstaller class or its methods.,v1,False
+PR-1375_build1,llm_shortlist,org.apache.karaf.service.guard.impl.ActivatorTest,0.0,1.0,The test class does not interact with the JsonConfigInstaller class or its methods.,v1,False
+PR-1375_build1,llm_shortlist,org.apache.karaf.shell.ssh.keygenerator.OpenSSHGeneratorKeyFileProviderTest,0.0,1.0,"The test class does not involve any code related to JSON configuration or file handling, which are the primary changes in the provided code snippet.",v1,False
+PR-1375_build1,llm_shortlist,org.apache.karaf.shell.support.ShellUtilTest,0.0,1.0,The test class does not interact with the JsonConfigInstaller class or its methods.,v1,False
+PR-1377_build3,llm_shortlist,org.apache.karaf.examples.itests.ExampleITest,0.0,1.0,The test class does not appear to interact with the changed code related to Narayana TX Manager or XA transactions.,v1,False
+PR-1377_build3,llm_shortlist,org.apache.karaf.examples.itests.ExampleWithConfigITest,0.0,1.0,The test class does not appear to interact with the changed code related to Narayana TX Manager or XA transactions.,v1,False
+PR-1377_build3,llm_shortlist,org.apache.karaf.itests.ConfigManagedServiceFactoryTest,0.1,0.8,The test class does not appear to interact with the changed code related to Narayana TX Manager or XA transactions.,v1,False
+PR-1377_build3,llm_shortlist,org.apache.karaf.itests.examples.CdiExampleTest,0.0,1.0,The test class does not interact with the changed code related to Narayana TX Manager and transaction management.,v1,False
+PR-1377_build3,llm_shortlist,org.apache.karaf.itests.examples.CommandExampleTest,0.0,1.0,The test class does not involve any changes related to the code change.,v1,False
+PR-1377_build3,llm_shortlist,org.apache.karaf.itests.examples.DumpExampleTest,0.0,1.0,The test class does not involve any of the changed code or dependencies.,v1,False
+PR-1377_build3,llm_shortlist,org.apache.karaf.itests.examples.JdbcExampleTest,0.1,0.8,The test class does not appear to interact with the transaction management or Narayana TX Manager components that are being added in the code change.,v1,False
+PR-1377_build3,llm_shortlist,org.apache.karaf.itests.examples.JpaExampleTest,0.1,0.8,The test class does not appear to interact with the Narayana TX Manager or any related features.,v1,False
+PR-1377_build3,llm_shortlist,org.apache.karaf.itests.examples.LogAppenderExampleTest,0.0,1.0,The test class does not involve any of the changed code or dependencies.,v1,False
+PR-1377_build3,llm_shortlist,org.apache.karaf.itests.examples.NamespaceHandlerExampleTest,0.0,1.0,The test class does not involve any of the changes made in the XATest.java file.,v1,False
+PR-1377_build3,llm_shortlist,org.apache.karaf.itests.examples.RestExampleTest,0.0,1.0,The test class does not appear to interact with the transaction management or Narayana TX Manager components that are being modified in the code change.,v1,False
+PR-1377_build3,llm_shortlist,org.apache.karaf.itests.examples.SchedulerExampleTest,0.0,1.0,The test class does not involve any of the changes made in the XATest.java file.,v1,False
+PR-1377_build3,llm_shortlist,org.apache.karaf.itests.examples.ServletExampleTest,0.0,1.0,The test class does not involve any changes related to the code change.,v1,False
+PR-1377_build3,llm_shortlist,org.apache.karaf.main.MainLockingTest,0.0,1.0,The test class does not appear to interact with the changed code related to Narayana TX Manager or XA transactions.,v1,False
+PR-1377_build4,llm_shortlist,org.apache.karaf.examples.itests.ExampleITest,0.0,1.0,The test class does not appear to interact with the changed code related to Narayana TX Manager or XA transactions.,v1,False
+PR-1377_build4,llm_shortlist,org.apache.karaf.examples.itests.ExampleWithConfigITest,0.0,1.0,The test class does not appear to interact with the changed code related to Narayana TX Manager or XA transactions.,v1,False
+PR-1377_build4,llm_shortlist,org.apache.karaf.itests.ConfigManagedServiceFactoryTest,0.1,0.8,The test class does not appear to interact with the changed code related to Narayana TX Manager or XA transactions.,v1,False
+PR-1377_build4,llm_shortlist,org.apache.karaf.itests.ExternalConfigTest,0.1,0.8,The test class does not appear to interact with the changed code related to Narayana TX Manager or XA transactions.,v1,False
+PR-1377_build4,llm_shortlist,org.apache.karaf.itests.InstanceTest,0.1,0.8,The test class does not appear to interact with the changed code related to Narayana TX Manager or XA transactions.,v1,False
+PR-1377_build4,llm_shortlist,org.apache.karaf.itests.JavaSecurityTest,0.0,1.0,The test class does not appear to interact with the changed code related to Narayana TX Manager or XA transactions.,v1,False
+PR-1377_build4,llm_shortlist,org.apache.karaf.itests.JmsTest,0.1,0.8,The test class does not appear to interact with the Narayana TX Manager or the transaction management features.,v1,False
+PR-1377_build4,llm_shortlist,org.apache.karaf.itests.JndiTest,0.0,1.0,The test class does not appear to interact with the Narayana TX Manager or the transaction management features that were added in the code change.,v1,False
+PR-1377_build4,llm_shortlist,org.apache.karaf.itests.SystemTest,0.1,0.8,The test class does not appear to interact with the changed code related to Narayana TX Manager or XA transactions.,v1,False
+PR-1377_build4,llm_shortlist,org.apache.karaf.itests.XATest,0.8,0.9,"The test class includes a test method that installs features and bundles, which could be affected by the change in the code.",v1,False
+PR-1377_build4,llm_shortlist,org.apache.karaf.itests.examples.JdbcExampleTest,0.1,0.8,The test class does not appear to interact with the transaction management or Narayana TX Manager components that are being added in the code change.,v1,False
+PR-1377_build4,llm_shortlist,org.apache.karaf.itests.examples.JmsExampleTest,0.1,0.8,The test class does not appear to interact with the Narayana TX Manager or the transaction management features installed in the code change.,v1,False
+PR-1377_build4,llm_shortlist,org.apache.karaf.itests.examples.JpaExampleTest,0.1,0.8,The test class does not appear to interact with the Narayana TX Manager or any related features.,v1,False
+PR-1377_build4,llm_shortlist,org.apache.karaf.itests.examples.LogAppenderExampleTest,0.0,1.0,The test class does not involve any of the changed code or dependencies.,v1,False
+PR-1377_build4,llm_shortlist,org.apache.karaf.itests.examples.NamespaceHandlerExampleTest,0.0,1.0,The test class does not involve any of the changes made in the XATest.java file.,v1,False
+PR-1377_build4,llm_shortlist,org.apache.karaf.itests.examples.RestExampleTest,0.0,1.0,The test class does not appear to interact with the transaction management or Narayana TX Manager components that are being modified in the code change.,v1,False
+PR-1377_build4,llm_shortlist,org.apache.karaf.itests.examples.ServletExampleTest,0.0,1.0,The test class does not involve any changes related to the code change.,v1,False
+PR-1377_build4,llm_shortlist,org.apache.karaf.itests.ssh.ConfigSshCommandSecurityTest,0.0,1.0,The test class does not involve any changes related to the code change.,v1,False
+PR-1379_build1,llm_shortlist,org.apache.karaf.config.core.impl.ConfigMBeanImplTest,0.1,0.8,The test class does not directly interact with the JsonConfigInstaller class or its methods.,v1,False
+PR-1379_build1,llm_shortlist,org.apache.karaf.config.core.impl.JsonConfigInstallerTest,0.2,0.8,The test class does not directly test the `init` method or the `pidToFile` map.,v1,False
+PR-1379_build1,llm_shortlist,org.apache.karaf.features.AppendTest,0.1,0.9,The test class does not appear to interact with the JsonConfigInstaller class or its methods.,v1,False
+PR-1379_build1,llm_shortlist,org.apache.karaf.features.management.codec.JmxFeatureTest,0.1,0.8,The test class does not appear to interact with the JsonConfigInstaller class or its methods.,v1,False
+PR-1379_build1,llm_shortlist,org.apache.karaf.itests.ConfigManagedServiceFactoryTest,0.2,0.8,The test class does not directly interact with the JsonConfigInstaller class or its methods.,v1,False
+PR-1379_build1,llm_shortlist,org.apache.karaf.itests.ExternalConfigTest,0.2,0.8,The test class does not directly interact with the JsonConfigInstaller class or its methods.,v1,False
+PR-1379_build1,llm_shortlist,org.apache.karaf.itests.InstanceTest,0.1,0.8,The test class does not directly interact with the JsonConfigInstaller class or its methods.,v1,False
+PR-1379_build1,llm_shortlist,org.apache.karaf.itests.JmsTest,0.1,0.8,The test class does not appear to interact with the JsonConfigInstaller class or its functionality.,v1,False
+PR-1379_build1,llm_shortlist,org.apache.karaf.itests.OverrideConfigTest,0.2,0.8,The test class does not directly interact with the JsonConfigInstaller class or its methods.,v1,False
+PR-1379_build1,llm_shortlist,org.apache.karaf.itests.XATest,0.1,0.8,The test class does not appear to interact with the JsonConfigInstaller class or its functionality.,v1,False
+PR-1379_build1,llm_shortlist,org.apache.karaf.itests.examples.JdbcExampleTest,0.0,1.0,The test class does not interact with the JsonConfigInstaller or its functionality.,v1,False
+PR-1379_build1,llm_shortlist,org.apache.karaf.itests.examples.JmsExampleTest,0.0,1.0,The test class does not interact with the JsonConfigInstaller class or its functionality.,v1,False
+PR-1379_build1,llm_shortlist,org.apache.karaf.itests.examples.JpaExampleTest,0.1,0.8,The test class does not appear to interact with the JsonConfigInstaller class or its functionality.,v1,False
+PR-1379_build1,llm_shortlist,org.apache.karaf.itests.examples.RestExampleTest,0.1,0.9,The test class does not appear to interact with the JsonConfigInstaller class or its functionality.,v1,False
+PR-1379_build1,llm_shortlist,org.apache.karaf.itests.examples.ServletExampleTest,0.0,1.0,The test class does not interact with the JsonConfigInstaller class or its methods.,v1,False
+PR-1379_build1,llm_shortlist,org.apache.karaf.log.core.internal.SetLogLevelTest,0.0,1.0,The test class does not interact with the JsonConfigInstaller class or its methods.,v1,False
+PR-1379_build1,llm_shortlist,org.apache.karaf.main.MainTest,0.1,0.8,The test class does not directly interact with the JsonConfigInstaller class or its methods.,v1,False
+PR-1379_build1,llm_shortlist,org.apache.karaf.util.config.ConfigurationPIDTest,0.1,0.9,The test class does not appear to interact with the JsonConfigInstaller class or its methods.,v1,False
+PR-1384_build1,llm_shortlist,org.apache.karaf.main.MainLockingTest,0.0,1.0,The test class does not interact with the changed code in ConfigCommandSupport.java.,v1,False
+PR-1384_build1,llm_shortlist,org.apache.karaf.main.MainStartTest,0.0,1.0,The test class does not interact with the changed code in ConfigCommandSupport.java.,v1,False
+PR-1384_build1,llm_shortlist,org.apache.karaf.main.MainTest,0.0,1.0,The test class does not appear to interact with the changed code in ConfigCommandSupport.java.,v1,False
+PR-1384_build1,llm_shortlist,org.apache.karaf.main.lock.DefaultJDBCLockTest,0.0,1.0,The test class does not interact with the changed code in ConfigCommandSupport.java.,v1,False
+PR-1384_build1,llm_shortlist,org.apache.karaf.main.lock.DerbyJDBCLockTest,0.0,1.0,The test class does not interact with the changed code in ConfigCommandSupport.java.,v1,False
+PR-1384_build1,llm_shortlist,org.apache.karaf.main.lock.OracleJDBCLockTest,0.0,1.0,The test class does not interact with the changed code in ConfigCommandSupport.java.,v1,False
+PR-1384_build1,llm_shortlist,org.apache.karaf.main.lock.PostgreSQLJDBCLockTest,0.0,1.0,The test class does not interact with the changed code in ConfigCommandSupport.java.,v1,False
+PR-1384_build1,llm_shortlist,org.apache.karaf.main.lock.StatementsTest,0.0,1.0,The test class does not interact with the changed code in `ConfigCommandSupport.java` or any of the other modified classes.,v1,False
+PR-1384_build1,llm_shortlist,org.apache.karaf.util.JsonReaderTest,0.0,1.0,The test class does not interact with the changed code in ConfigCommandSupport.java.,v1,False
+PR-1384_build1,llm_shortlist,org.apache.karaf.util.config.ConfigurationPIDTest,0.0,1.0,The test class does not appear to interact with the changed code in ConfigCommandSupport.java.,v1,False
+PR-1390_build2,llm_shortlist,org.apache.karaf.itests.ConfigManagedServiceFactoryTest,0.0,1.0,The test class does not appear to interact with the DeployerUtils class or its methods.,v1,False
+PR-1390_build2,llm_shortlist,org.apache.karaf.itests.ExternalConfigTest,0.0,1.0,The test class does not appear to interact with the DeployerUtils class or its methods.,v1,False
+PR-1390_build2,llm_shortlist,org.apache.karaf.itests.FeatureTest,0.1,0.8,The test class does not appear to interact with the DeployerUtils class or its methods.,v1,False
+PR-1390_build2,llm_shortlist,org.apache.karaf.itests.InstanceTest,0.0,1.0,The test class does not appear to interact with the DeployerUtils class or its methods.,v1,False
+PR-1390_build2,llm_shortlist,org.apache.karaf.itests.XATest,0.0,1.0,The test class does not appear to interact with the DeployerUtils class or its methods.,v1,False
+PR-1390_build2,llm_shortlist,org.apache.karaf.itests.examples.JdbcExampleTest,0.0,1.0,The test class does not interact with the DeployerUtils class or any of its methods.,v1,False
+PR-1390_build2,llm_shortlist,org.apache.karaf.itests.examples.JpaExampleTest,0.0,1.0,The test class does not appear to interact with the DeployerUtils class or any of its methods.,v1,False
+PR-1390_build2,llm_shortlist,org.apache.karaf.itests.examples.RestExampleTest,0.0,1.0,The test class does not appear to interact with the DeployerUtils class or any of its methods.,v1,False
+PR-1390_build2,llm_shortlist,org.apache.karaf.itests.examples.ServletExampleTest,0.0,1.0,The test class does not appear to interact with the DeployerUtils class or any of its methods.,v1,False
+PR-1390_build2,llm_shortlist,org.apache.karaf.main.MainLockingTest,0.0,1.0,The test class does not appear to interact with the DeployerUtils class or any of its methods.,v1,False
+PR-1391_build2,llm_shortlist,org.apache.karaf.event.command.EventSendCommandTest,0.1,0.9,The test class does not interact with the file system or configuration properties that are modified in the code change.,v1,False
+PR-1391_build2,llm_shortlist,org.apache.karaf.instance.main.ExecuteTest,0.1,0.8,The test class does not appear to interact with the file system or configuration properties that are modified in the code change.,v1,False
+PR-1391_build2,llm_shortlist,org.apache.karaf.itests.ConfigManagedServiceFactoryTest,0.1,0.8,"The test class does not appear to interact with the file system or configuration management, which are the primary areas affected by the code change.",v1,False
+PR-1391_build2,llm_shortlist,org.apache.karaf.itests.ExternalConfigTest,0.2,0.8,The test does not directly interact with the file deletion logic in Main.java.,v1,False
+PR-1391_build2,llm_shortlist,org.apache.karaf.itests.JmsTest,0.1,0.8,The test class does not directly interact with the file system or configuration properties that are modified in the code change.,v1,False
+PR-1391_build2,llm_shortlist,org.apache.karaf.itests.OverrideConfigTest,0.1,0.8,The test class does not appear to interact with the file system operations or configuration management that are modified in the code change.,v1,False
+PR-1391_build2,llm_shortlist,org.apache.karaf.itests.XATest,0.1,0.8,The test class does not appear to interact with the file system or configuration properties that are modified in the code change.,v1,False
+PR-1391_build2,llm_shortlist,org.apache.karaf.itests.examples.JdbcExampleTest,0.0,1.0,"The test class does not interact with the file system or logging directories, which are the primary targets of the code change.",v1,False
+PR-1391_build2,llm_shortlist,org.apache.karaf.itests.examples.JpaExampleTest,0.0,1.0,The test class does not involve file operations or system properties related to data or log directories.,v1,False
+PR-1391_build2,llm_shortlist,org.apache.karaf.itests.examples.RestExampleTest,0.1,0.8,"The test class does not appear to interact with the file system or logging directories, which are the primary targets of the code change.",v1,False
+PR-1391_build2,llm_shortlist,org.apache.karaf.itests.examples.ServletExampleTest,0.1,0.8,The test class does not appear to interact with the file system or configuration properties that are modified in the code change.,v1,False
+PR-1391_build2,llm_shortlist,org.apache.karaf.itests.features.EnterpriseFeaturesTest,0.1,0.8,The test class does not appear to interact with the file system or configuration properties that are modified in the code change.,v1,False
+PR-1391_build2,llm_shortlist,org.apache.karaf.itests.ssh.BundleSshCommandSecurityTest,0.1,0.8,The test class does not appear to interact with the file system operations related to cleaning or managing bundles.,v1,False
+PR-1391_build2,llm_shortlist,org.apache.karaf.main.MainLockingTest,0.2,0.8,The test class does not directly interact with the file deletion logic in Main.java.,v1,False
+PR-1391_build2,llm_shortlist,org.apache.karaf.main.MainTest,0.8,0.9,"The test class creates a temporary data directory and attempts to clean it, which is relevant to the code change that adds a condition to exclude log directories from deletion.",v1,False
+PR-1391_build2,llm_shortlist,org.apache.karaf.main.util.BootstrapLogManagerTest,0.1,0.8,The test class does not directly interact with the file deletion logic in Main.java.,v1,False
+PR-1391_build2,llm_shortlist,org.apache.karaf.maven.command.MavenConfigurationSupportTest,0.1,0.8,The test class does not directly interact with the file deletion logic in Main.java.,v1,False
+PR-1391_build2,llm_shortlist,org.apache.karaf.profile.assembly.BuilderTest,0.1,0.8,The test class does not appear to interact with the file system operations or properties that are modified in the code change.,v1,False
+PR-1391_build2,llm_shortlist,org.apache.karaf.system.internal.SystemServiceImplTest,0.0,1.0,The test class does not interact with the `Main.java` file or its methods.,v1,False
+PR-1391_build2,llm_shortlist,org.apache.karaf.tools.utils.KarafPropertiesEditorTest,0.1,0.8,The test class does not appear to interact with the file system operations or properties related to the Karaf instance data directory or log directory.,v1,False

@@ -516,7 +516,7 @@ def run_builds(cfg, loader, eval_rows, specs, budgets, comps, ctx, config_file="
     meta = {
         "run_id": ctx.run_id, "experiment": ctx.experiment, "split": ctx.split, "seed": ctx.seed,
         "git_commit": git_commit(), "model": model,
-        "prompt_versions": {"relevance": PROMPT_VERSION, "orchestrator": ORCH_PROMPT_VERSION,
+        "prompt_versions": {"relevance": PROMPT_VERSION, "orchestrator": cfg["orchestrator"].get("prompt_version") or ORCH_PROMPT_VERSION,
                             "explainer": getattr(comps.explainer, "prompt_version",
                                                  cfg["explainer"]["prompt_version"]),
                             "single_call": getattr(comps.single_call, "prompt_version",

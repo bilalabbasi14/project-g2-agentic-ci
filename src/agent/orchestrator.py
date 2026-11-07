@@ -25,7 +25,7 @@ from src.agent.semantic_analyzer import InvalidJSONError, SchemaViolationError, 
 from src.contracts import FallbackRecord, OrchestratorDecision, OrchestratorInput, validate
 from src.obs.trace import NullTrace
 
-ORCH_PROMPT_VERSION = "o1"
+ORCH_PROMPT_VERSION = "o2"     # default; "o1" is kept for the record of the first dev run (P2-06)
 
 LLM_SOURCES = ("llm_shortlist", "llm_all_individual", "llm_single_call")
 
@@ -45,7 +45,7 @@ FEATURE_DOCS = {
     "hist_mean_shortlist": "mean history score over the shortlisted tests",
 }
 
-PROMPT_TEMPLATE = """You help choose which regression tests to run for one code change (one CI build).
+PROMPT_TEMPLATE_O1 = """You help choose which regression tests to run for one code change (one CI build).
 Each candidate test has two scores:
 - history: how often and how recently the test failed in earlier builds (0 to 1);
 - relevance: how closely the test is related to the changed code (0 to 1).
@@ -79,6 +79,58 @@ To call a tool:
 To give the final answer:
 {{"action": "final", "w": 0.5, "confidence": 0.8, "reason": "the change is focused and two tests have high relevance"}}
 confidence (0 to 1) is how sure you are that your w is better than 0.67. reason is one short sentence.{forced}"""
+
+# o2 (dev-split iteration of P2-06): with o1 the model returned the example values of the
+# answer shape (w 0.5, confidence 0.8) on every dev build. o2 gives no concrete numbers the
+# model could copy, explains how the features should move w, and asks for a build-specific reason.
+PROMPT_TEMPLATE_O2 = """You help choose which regression tests to run for one code change (one CI build).
+Each candidate test has two scores:
+- history: how often and how recently the test failed in earlier builds (0 to 1);
+- relevance: how closely the test is related to the changed code (0 to 1).
+Tests are ranked by  w * history + (1 - w) * relevance^1.2 , and the top of the ranking is run.
+
+Your task: decide how much to trust history versus relevance for THIS build only, as one number w
+from 0 to 1. w = 1 ranks by history alone; w = 0 ranks by relevance alone. The DANTE method uses
+one fixed w for every build; your value should come from this build's evidence.
+
+How the evidence should move w:
+- Lower w (trust relevance more) when the relevance signal is strong and specific: a high rel_max,
+  shortlisted tests with clearly high relevance (n_rel_ge_05 above zero), and a focused change
+  (few changed files and folders).
+- Raise w (trust history more) when relevance is weak or flat (rel_max low, n_rel_ge_05 zero, all
+  shortlisted relevances similar) or when history is informative (high hist_max, high
+  recent_failure_density).
+- When the signals disagree or are weak, stay closer to the middle of the range.
+- If one test looks decisive but you are unsure, call a tool to check it before answering.
+Builds differ, so different builds should usually get different values of w. Do not reuse a
+number from these instructions; derive w from the features and the shortlist below.
+
+Relevance source for this build: {relevance_source}
+
+Build features:
+{features}
+
+Changed files ({n_files}):
+{files}
+
+Shortlisted tests (test | history | tfidf relevance | llm relevance | duration s):
+{shortlist}
+
+Tools you may call (at most {max_tools} calls in total, {tools_left} left):
+{tools}
+
+Observations from earlier tool calls:
+{observations}
+
+Answer with a single JSON object and nothing else, in one of these two shapes
+(replace every <...> with your own value):
+To call a tool:
+{{"action": "call_tool", "tool": "<history_retrieval or diff_reader>", "args": {{"<test or file>": "<a shortlisted test or a changed file>"}}, "reason": "<what you want to check>"}}
+To give the final answer:
+{{"action": "final", "w": <your weight for this build, from 0 to 1>, "confidence": <from 0 to 1>, "reason": "<one sentence naming the features that decided w>"}}
+confidence is how sure you are that your w ranks this build's tests better than DANTE's fixed w.{forced}"""
+
+TEMPLATES = {"o1": PROMPT_TEMPLATE_O1, "o2": PROMPT_TEMPLATE_O2}
 
 FORCED_FINAL = "\n\nTool limit reached. You must now give the final answer."
 # forced before max_tool_calls tools were used, because only max_tool_calls + 2 LLM calls are allowed
@@ -213,7 +265,10 @@ class LLMOrchestrator:
         self.observation_max_chars = int(o["observation_max_chars"])
         self.max_retries = int((cfg.get("llm_p2") or {}).get("max_retries", 1))
         self.trace = trace or NullTrace()
-        self.prompt_version = ORCH_PROMPT_VERSION
+        self.prompt_version = o.get("prompt_version") or ORCH_PROMPT_VERSION
+        if self.prompt_version not in TEMPLATES:
+            raise ValueError(f"unknown orchestrator prompt version {self.prompt_version!r}; "
+                             f"valid: {', '.join(TEMPLATES)}")
 
     @property
     def max_llm_calls(self):
@@ -228,7 +283,7 @@ class LLMOrchestrator:
         tools = "\n".join(f"- {s['name']}: {s['description']} Input: {json.dumps(s['input'])}. "
                           f"Output: {json.dumps(s['output'])}." for s in specs) or "(none)"
         obs = "\n".join(observations) or "(none yet)"
-        return PROMPT_TEMPLATE.format(
+        return TEMPLATES[self.prompt_version].format(
             relevance_source=inp.relevance_source, features=feats, n_files=len(inp.changed_files),
             files=files, shortlist=rows, max_tools=self.max_tool_calls,
             tools_left=0 if forced else max(self.max_tool_calls - tools_used, 0), tools=tools, observations=obs,

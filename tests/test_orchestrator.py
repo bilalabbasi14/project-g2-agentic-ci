@@ -215,12 +215,39 @@ def test_observation_truncated():
 
 def test_prompt_contents():
     o = _orch([final()])
+    d = o.decide(_input(), FakeToolRegistry(), "run1")
+    p = o.provider.prompts[0]
+    assert o.prompt_version == d.prompt_version == ORCH_PROMPT_VERSION == "o2"
+    for needle in ("DANTE method uses", "w = 1 ranks by history alone", "w = 0 ranks by relevance alone", "p.b.SlowTest",
+                   "a/Cache.java", "history_retrieval", '"action": "call_tool"', '"action": "final"',
+                   "single JSON object and nothing else", "recent_failure_density", "n_rel_ge_05", "rel_max"):
+        assert needle in p, needle
+
+
+def test_o2_answer_shapes_have_no_numbers_to_copy():
+    """o1 put example values (w 0.5, confidence 0.8) in the answer shape and the model returned them on
+    every dev build; o2's shapes only have placeholders."""
+    import re
+    o = _orch([final()])
     o.decide(_input(), FakeToolRegistry(), "run1")
     p = o.provider.prompts[0]
-    for needle in ("0.67", "w near 1", "w near 0", "p.b.SlowTest", "a/Cache.java", "history_retrieval",
-                   '"action": "call_tool"', '"action": "final"', "single JSON object and nothing else",
-                   "recent_failure_density"):
-        assert needle in p, needle
+    assert not re.search(r'"w":\s*[0-9]', p) and not re.search(r'"confidence":\s*[0-9]', p)
+    assert '"w": <your weight for this build, from 0 to 1>' in p
+    assert "different builds should usually get different values of w" in p
+    from src.agent.orchestrator import PROMPT_TEMPLATE_O2
+    # the only numbers in the o2 instructions: the 0-1 range of w and the formula's exponent
+    assert sorted(set(re.findall(r"\d+(?:\.\d+)?", PROMPT_TEMPLATE_O2))) == ["0", "05", "1", "1.2"]
+
+
+def test_o1_stays_selectable_and_unknown_version_fails():
+    cfg = copy.deepcopy(CFG)
+    cfg["orchestrator"]["prompt_version"] = "o1"
+    o = LLMOrchestrator(MockProvider([final()]), cfg)
+    d = o.decide(_input(), FakeToolRegistry(), "run1")
+    assert d.prompt_version == "o1" and '"w": 0.5, "confidence": 0.8' in o.provider.prompts[0]
+    cfg["orchestrator"]["prompt_version"] = "o9"
+    with pytest.raises(ValueError):
+        LLMOrchestrator(MockProvider([final()]), cfg)
 
 
 # ------------------------------------------------------------------ tracing ----

@@ -16,6 +16,7 @@ import argparse
 import json
 import logging
 import os
+import re
 import sys
 from pathlib import Path
 from types import SimpleNamespace
@@ -83,6 +84,14 @@ def mock_relevance(prompt):
 
 MOCK_ORCHESTRATOR = json.dumps({"action": "final", "w": 0.6666667, "confidence": 0.9, "reason": "mock"})
 
+_LISTED_TEST = re.compile(r"^\d+\. (\S+)$", re.MULTILINE)
+
+
+def mock_single_call(prompt):
+    """Mock single-call answer that rates every numbered test in the prompt with 0.5,
+    so laptop runs exercise the scorer's success path (not only its fallback)."""
+    return json.dumps({"scores": [{"test": t, "relevance": 0.5} for t in _LISTED_TEST.findall(prompt)]})
+
 
 def _import_component(module, cls, issue, method):
     """Lazily import a component that another issue delivers; exit clearly if it is missing."""
@@ -118,7 +127,14 @@ def make_components(cfg, specs, provider_kind, base_url, seed, trace):
     single = [s for s in specs if s.relevance_source == "llm_single_call"]
     if single:
         cls = _import_component("src.agent.single_call", "SingleCallScorer", "P2-17 (issue #17)", single[0].name)
-        comps.single_call = cls(provider("single_call", ['{"scores": []}']), cfg, trace=trace)
+        if provider_kind == "mock":
+            sc_provider = provider("single_call", [mock_single_call])
+        else:
+            # built with single_call.num_ctx (16384), not llm_p2.num_ctx (8192): the prompt plus the
+            # full answer for ~200 candidates is about 8,600-8,900 tokens (review of PR #52)
+            from src.agent.single_call import make_single_call_provider
+            sc_provider = make_single_call_provider(cfg, base_url=base_url, seed=seed)
+        comps.single_call = cls(sc_provider, cfg, trace=trace)
     if any(s.weight_mode == "tuned" and s.tuned_key not in comps.tuned_weights for s in specs):
         missing = sorted({s.tuned_key for s in specs if s.weight_mode == "tuned"} - set(comps.tuned_weights))
         raise SystemExit(f"tuned weights {missing} missing from {cfg['tuning']['tuned_weights_file']} (P2-11)")

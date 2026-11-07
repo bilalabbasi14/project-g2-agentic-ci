@@ -226,3 +226,28 @@ def test_merge_drops_failed_builds_that_later_succeeded(tmp_path):
     merge_shards.merge_run(run_dir)
     merged = json.loads((run_dir / "run_meta.json").read_text(encoding="utf-8"))
     assert [f["build"] for f in merged["failed_builds"]] == ["B2"]   # B1 now has rows, so it is not failed
+
+
+def test_kaggle_config_matches_config_except_paths():
+    """config_kaggle.yaml must differ from config.yaml only in paths: a prompt version set in one but
+    not the other made a Kaggle dev run use orchestrator prompt o1 instead of o2 (P2-06)."""
+    from pathlib import Path
+    import yaml
+    root = Path(__file__).resolve().parent.parent
+    base = yaml.safe_load((root / "config.yaml").read_text(encoding="utf-8"))
+    kaggle = yaml.safe_load((root / "config_kaggle.yaml").read_text(encoding="utf-8"))
+    path_keys = {("paths", k) for k in base["paths"]} | {("paths_p2", "source_cache"), ("trace", "dir"),
+                                                          ("llm_p2", "cache_dir")}
+
+    def flat(d, prefix=()):
+        for k, v in d.items():
+            if isinstance(v, dict):
+                yield from flat(v, prefix + (k,))
+            else:
+                yield prefix + (k,), v
+
+    a, b = dict(flat(base)), dict(flat(kaggle))
+    assert set(a) == set(b)
+    differ = {k for k in a if a[k] != b[k]}
+    assert differ <= path_keys, sorted(differ - path_keys)
+

@@ -136,7 +136,9 @@ def holm(pvals):
 
 
 def _clean(diff):
-    d = np.asarray(diff, dtype=float)
+    """Float copy of the differences with |d| < ZERO_TOL set to 0. Always a copy:
+    pandas 3 (copy-on-write) hands out read-only arrays, which must not be written."""
+    d = np.array(diff, dtype=float)
     d[np.abs(d) < ZERO_TOL] = 0.0
     return d
 

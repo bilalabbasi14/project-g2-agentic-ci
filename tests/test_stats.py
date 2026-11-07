@@ -167,3 +167,13 @@ def test_cli_with_glob(tmp_path):
     for name in ("friedman.csv", "pairwise.csv", "seed_variability.csv", "summary.md"):
         assert (tmp_path / "cli" / name).exists()
     assert main(["--runs", str(tmp_path / "none*" / "x.csv"), "--out", str(tmp_path / "cli")]) == 1
+
+
+def test_read_only_input_is_not_modified():
+    """pandas 3 (copy-on-write) hands out read-only arrays; the helpers must copy, not write in place."""
+    diff = np.array([0.2, 1e-15, -0.1, 0.0])
+    diff.setflags(write=False)
+    row = paired_test(diff)
+    assert row["ties"] == 2 and row["wins"] == 1 and row["losses"] == 1
+    assert rank_biserial(diff) == pytest.approx((2 - 1) / 3)
+    assert diff[1] == 1e-15                                   # the caller's array is unchanged

@@ -1,0 +1,6 @@
+# E1 Baselines (docs/PROJECT_CONTEXT.md §8): non-agentic baselines.
+experiment: E1
+split: test
+seeds: [1, 2, 3]
+budgets: [0.05, 0.10, 0.20]
+methods: [Random, History-only, TF-IDF-only, Tuned-weight (TF-IDF), Single-call LLM]

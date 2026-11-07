@@ -1,0 +1,6 @@
+# E2 stored comparison: our port vs DANTE's stored outputs on the 50 Phase 1 builds.
+experiment: E2_stored
+split: phase1
+seeds: [1]
+budgets: [0.05, 0.10, 0.20]
+methods: [DANTE-CCH, DANTE-CCH-shipped, DANTE-CCH (stored)]

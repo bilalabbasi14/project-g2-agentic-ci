@@ -1,0 +1,135 @@
+build,budget,category,detail
+PR-1427_build2,0.05,F3,org.apache.karaf.itests.examples.JdbcExampleTest
+PR-1427_build2,0.1,F3,org.apache.karaf.itests.examples.JdbcExampleTest
+PR-1427_build2,0.2,F3,org.apache.karaf.itests.examples.JdbcExampleTest
+PR-1427_build3,0.05,F3,org.apache.karaf.itests.examples.JmsExampleTest
+PR-1427_build3,0.1,F3,org.apache.karaf.itests.examples.JmsExampleTest
+PR-1427_build3,0.2,F6,org.apache.karaf.config.command.UpdateCommandTest
+PR-1427_build3,0.2,S,org.apache.karaf.itests.examples.JmsExampleTest
+PR-1462_build1,0.05,F2,org.apache.karaf.shell.ssh.SshUtilsTest
+PR-1462_build1,0.05,F5,Agent-weighted %DTC 0.000 < DANTE-CCH 1.000
+PR-1462_build1,0.05,F6,org.apache.karaf.config.core.impl.JsonConfigInstallerTest
+PR-1462_build1,0.2,F2,org.apache.karaf.shell.ssh.SshUtilsTest
+PR-1462_build1,0.2,F5,Agent-weighted %DTC 0.000 < DANTE-CCH 1.000
+PR-1462_build1,0.2,F6,org.apache.karaf.event.service.EventCollectorTest
+PR-1492_build2,0.05,F2,org.apache.karaf.jaas.modules.ldap.LdapCacheTest
+PR-1492_build2,0.1,F2,org.apache.karaf.jaas.modules.ldap.LdapCacheTest
+PR-1492_build2,0.1,F6,org.apache.karaf.features.FeaturesServiceTest; org.apache.karaf.features.RepositoryTest
+PR-1492_build2,0.2,F2,org.apache.karaf.jaas.modules.ldap.LdapCacheTest
+PR-1501_build2,0.05,F3,org.apache.karaf.itests.SystemShutdownTest
+PR-1501_build2,0.1,F3,org.apache.karaf.itests.SystemShutdownTest
+PR-1501_build2,0.2,F3,org.apache.karaf.itests.SystemShutdownTest
+PR-1501_build3,0.05,F3,org.apache.karaf.itests.SystemShutdownTest
+PR-1501_build3,0.1,F3,org.apache.karaf.itests.SystemShutdownTest
+PR-1501_build3,0.2,F3,org.apache.karaf.itests.SystemShutdownTest
+PR-1501_build3,0.2,F6,org.apache.karaf.config.command.EditCommandTest
+PR-1536_build1,0.05,F3,org.apache.karaf.itests.XATest
+PR-1536_build1,0.1,F3,org.apache.karaf.itests.XATest
+PR-1536_build1,0.2,S,org.apache.karaf.itests.XATest
+PR-1536_build2,0.05,F2,org.apache.karaf.itests.ssh.FeatureSshCommandSecurityTest
+PR-1536_build2,0.1,F2,org.apache.karaf.itests.ssh.FeatureSshCommandSecurityTest
+PR-1536_build2,0.2,F2,org.apache.karaf.itests.ssh.FeatureSshCommandSecurityTest
+PR-1536_build3,0.05,F3,org.apache.karaf.itests.examples.JpaExampleTest
+PR-1536_build3,0.2,F6,org.apache.karaf.config.command.UpdateCommandTest
+PR-1548_build1,0.05,F2,org.apache.karaf.itests.FelixHttpTest
+PR-1548_build1,0.1,F2,org.apache.karaf.itests.FelixHttpTest
+PR-1548_build1,0.2,F2,org.apache.karaf.itests.FelixHttpTest
+PR-1548_build1,0.2,F6,org.apache.karaf.bundle.command.bundletree.TreeTest
+PR-1550_build2,0.05,F3,org.apache.karaf.itests.FelixHttpTest
+PR-1550_build2,0.1,F3,org.apache.karaf.itests.FelixHttpTest
+PR-1550_build2,0.2,S,org.apache.karaf.itests.FelixHttpTest
+PR-1552_build2,0.05,S,org.apache.karaf.itests.FelixHttpTest
+PR-1552_build4,0.05,F3,org.apache.karaf.itests.JmsTest; org.apache.karaf.itests.XATest
+PR-1552_build4,0.1,F3,org.apache.karaf.itests.XATest
+PR-1552_build4,0.2,F3,org.apache.karaf.itests.XATest
+PR-1624_build3,0.1,F6,org.apache.karaf.bundle.command.ListServicesTest; org.apache.karaf.bundle.core.internal.MavenConfigServiceTest
+PR-1624_build3,0.2,F6,org.apache.karaf.bundle.command.bundletree.TreeTest
+PR-1626_build2,0.05,F3,org.apache.karaf.itests.JmsTest
+PR-1626_build2,0.05,F4,org.apache.karaf.itests.JmsTest
+PR-1626_build2,0.1,S,org.apache.karaf.itests.JmsTest
+PR-1626_build2,0.2,F6,org.apache.karaf.client.ClientConfigTest; org.apache.karaf.config.command.EditCommandTest
+PR-1626_build3,0.05,F2,org.apache.karaf.itests.examples.HttpResourceExampleTest
+PR-1626_build3,0.05,F4,org.apache.karaf.itests.examples.HttpResourceExampleTest
+PR-1626_build3,0.05,F5,Agent-weighted %DTC 0.000 < DANTE-CCH 1.000
+PR-1626_build3,0.2,F6,org.apache.karaf.config.command.EditCommandTest
+PR-1627_build4,0.05,F2,org.apache.karaf.itests.ssh.BundleSshCommandSecurityTest; org.apache.karaf.itests.ssh.FeatureSshCommandSecurityTest
+PR-1627_build4,0.05,F6,org.apache.karaf.bundle.core.internal.MavenConfigServiceTest
+PR-1627_build4,0.1,F2,org.apache.karaf.itests.ssh.BundleSshCommandSecurityTest; org.apache.karaf.itests.ssh.FeatureSshCommandSecurityTest
+PR-1627_build4,0.2,F2,org.apache.karaf.itests.ssh.BundleSshCommandSecurityTest; org.apache.karaf.itests.ssh.FeatureSshCommandSecurityTest
+PR-1627_build5,0.05,F2,org.apache.karaf.itests.examples.ServletExampleTest; org.apache.karaf.itests.examples.SoapExampleTest
+PR-1627_build5,0.05,F6,org.apache.karaf.audit.util.FastDateFormatTest
+PR-1627_build5,0.1,F2,org.apache.karaf.itests.examples.ServletExampleTest; org.apache.karaf.itests.examples.SoapExampleTest
+PR-1627_build5,0.2,F2,org.apache.karaf.itests.examples.ServletExampleTest; org.apache.karaf.itests.examples.SoapExampleTest
+PR-1627_build5,0.2,F6,org.apache.karaf.audit.util.FastDateFormatTest
+PR-1641_build3,0.05,F2,org.apache.karaf.jaas.modules.krb5.Krb5LoginModuleTest
+PR-1641_build3,0.1,F2,org.apache.karaf.jaas.modules.krb5.Krb5LoginModuleTest
+PR-1641_build3,0.1,F6,org.apache.karaf.config.core.impl.JsonConfigInstallerTest
+PR-1641_build3,0.2,F6,org.apache.karaf.config.command.UpdateCommandTest; org.apache.karaf.config.core.impl.KarafConfigurationPluginTest
+PR-1641_build4,0.05,F2,org.apache.karaf.itests.WebTest; org.apache.karaf.itests.ssh.ConfigSshCommandSecurityTest
+PR-1641_build4,0.1,F2,org.apache.karaf.itests.WebTest; org.apache.karaf.itests.ssh.ConfigSshCommandSecurityTest
+PR-1641_build4,0.2,F2,org.apache.karaf.itests.WebTest; org.apache.karaf.itests.ssh.ConfigSshCommandSecurityTest
+PR-1641_build4,0.2,F6,org.apache.karaf.config.command.UpdateCommandTest
+PR-1642_build1,0.05,F3,org.apache.karaf.itests.examples.GraphQLExampleTest
+PR-1642_build1,0.05,F4,org.apache.karaf.itests.examples.GraphQLExampleTest
+PR-1642_build1,0.1,S,org.apache.karaf.itests.examples.GraphQLExampleTest
+PR-1645_build2,0.05,F3,org.apache.karaf.itests.examples.JmsExampleTest
+PR-1645_build2,0.1,F3,org.apache.karaf.itests.examples.JmsExampleTest
+PR-1645_build2,0.2,F3,org.apache.karaf.itests.examples.JmsExampleTest
+PR-1648_build2,0.05,F2,org.apache.karaf.audit.logger.EventLoggerTest
+PR-1648_build2,0.05,F6,org.apache.karaf.bundle.command.bundletree.TreeTest
+PR-1648_build2,0.1,F2,org.apache.karaf.audit.logger.EventLoggerTest
+PR-1648_build2,0.1,F6,org.apache.karaf.client.ClientConfigTest; org.apache.karaf.config.command.EditCommandTest
+PR-1648_build2,0.2,F2,org.apache.karaf.audit.logger.EventLoggerTest
+PR-1648_build2,0.2,F5,Agent-weighted %DTC 0.000 < DANTE-CCH 1.000
+PR-1649_build1,0.05,F3,org.apache.karaf.itests.JmsTest
+PR-1649_build1,0.1,F3,org.apache.karaf.itests.JmsTest
+PR-1656_build1,0.2,F6,org.apache.karaf.itests.ssh.ConfigSshCommandSecurityTest
+PR-1656_build2,0.05,F3,org.apache.karaf.itests.XATest; org.apache.karaf.itests.examples.JmsExampleTest
+PR-1656_build2,0.1,F3,org.apache.karaf.itests.XATest
+PR-1656_build2,0.2,F3,org.apache.karaf.itests.XATest
+PR-1662_build1,0.05,S,org.apache.karaf.itests.examples.JmsExampleTest
+PR-1662_build1,0.1,F3,org.apache.karaf.itests.examples.JmsExampleTest
+PR-1662_build1,0.1,F4,org.apache.karaf.itests.examples.JmsExampleTest
+PR-1701_build1,0.05,F2,org.apache.karaf.examples.itests.ExampleITest
+PR-1701_build1,0.1,F2,org.apache.karaf.examples.itests.ExampleITest
+PR-1701_build1,0.2,F2,org.apache.karaf.examples.itests.ExampleITest
+PR-1725_build1,0.2,F6,org.apache.karaf.audit.util.FastDateFormatTest; org.apache.karaf.bundle.core.internal.MavenConfigServiceTest
+PR-1782_build2,0.05,F3,org.apache.karaf.itests.examples.JdbcExampleTest
+PR-1782_build2,0.1,F3,org.apache.karaf.itests.examples.JdbcExampleTest
+PR-1782_build2,0.2,F3,org.apache.karaf.itests.examples.JdbcExampleTest
+PR-1814_build1,0.05,F2,org.apache.karaf.itests.features.StandardFeaturesTest
+PR-1814_build1,0.05,F3,org.apache.karaf.itests.ssh.ConfigSshCommandSecurityTest
+PR-1814_build1,0.1,F2,org.apache.karaf.itests.features.StandardFeaturesTest
+PR-1814_build1,0.2,F2,org.apache.karaf.itests.features.StandardFeaturesTest
+PR-1814_build2,0.05,F3,org.apache.karaf.itests.features.StandardFeaturesTest
+PR-1814_build2,0.1,F3,org.apache.karaf.itests.features.StandardFeaturesTest
+PR-1816_build1,0.05,S,org.apache.karaf.features.internal.service.BootFeaturesInstallerTest
+PR-1816_build1,0.1,S,org.apache.karaf.features.internal.service.BootFeaturesInstallerTest
+PR-1816_build1,0.2,F6,org.apache.karaf.config.command.EditCommandTest
+PR-1816_build2,0.05,F2,org.apache.karaf.examples.itests.ExampleITest; org.apache.karaf.itests.ExternalConfigTest; org.apache.karaf.itests.HttpTest
+PR-1816_build2,0.05,F3,org.apache.karaf.examples.itests.ExampleWithConfigITest
+PR-1816_build2,0.1,F2,org.apache.karaf.examples.itests.ExampleITest; org.apache.karaf.itests.ExternalConfigTest; org.apache.karaf.itests.HttpTest
+PR-1816_build2,0.1,F3,org.apache.karaf.examples.itests.ExampleWithConfigITest
+PR-1816_build2,0.2,F2,org.apache.karaf.examples.itests.ExampleITest; org.apache.karaf.itests.ExternalConfigTest; org.apache.karaf.itests.HttpTest
+PR-1816_build2,0.2,F3,org.apache.karaf.examples.itests.ExampleWithConfigITest
+PR-1827_build1,0.05,F3,org.apache.karaf.itests.examples.JdbcExampleTest
+PR-1827_build1,0.1,F3,org.apache.karaf.itests.examples.JdbcExampleTest
+PR-1827_build1,0.2,F3,org.apache.karaf.itests.examples.JdbcExampleTest
+PR-1827_build1,0.2,F6,org.apache.karaf.audit.util.FastDateFormatTest
+PR-1840_build4,0.05,F2,org.apache.karaf.itests.BundleTest; org.apache.karaf.itests.ConditionalFeaturesTest; org.apache.karaf.itests.DiagnosticTest; org.apache.karaf.itests.ExternalConfigTest; org.apache.karaf.itests.FelixHttpTest; org.apache.karaf.itests.GroovyTest; org.apache.karaf.itests.HttpTest; org.apache.karaf.itests.ImportServiceTest; org.apache.karaf.itests.InstanceTest; org.apache.karaf.itests.JaasTest; org.apache.karaf.itests.JavaSecurityTest; org.apache.karaf.itests.JmsTest; org.apache.karaf.itests.JndiTest; org.apache.karaf.itests.JtaTest; org.apache.karaf.itests.KarTest; org.apache.karaf.itests.LogTest; org.apache.karaf.itests.ObrTest; org.apache.karaf.itests.OverrideConfigTest; org.apache.karaf.itests.PackageTest; org.apache.karaf.itests.ServiceTest; org.apache.karaf.itests.SystemShutdownTest; org.apache.karaf.itests.SystemTest; org.apache.karaf.itests.WebTest; org.apache.karaf.itests.WrapperTest; org.apache.karaf.itests.examples.BlueprintExampleTest; org.apache.karaf.itests.examples.BundleExampleTest; org.apache.karaf.itests.examples.CamelExampleTest; org.apache.karaf.itests.examples.CdiExampleTest; org.apache.karaf.itests.examples.CommandExampleTest; org.apache.karaf.itests.examples.ConfigExampleTest; org.apache.karaf.itests.examples.DeployerExampleTest; org.apache.karaf.itests.examples.DumpExampleTest; org.apache.karaf.itests.examples.HttpResourceExampleTest; org.apache.karaf.itests.examples.JaasExampleTest; org.apache.karaf.itests.examples.JpaExampleTest; org.apache.karaf.itests.examples.LogAppenderExampleTest; org.apache.karaf.itests.examples.MBeanExampleTest; org.apache.karaf.itests.examples.NamespaceHandlerExampleTest; org.apache.karaf.itests.examples.RestExampleTest; org.apache.karaf.itests.examples.SchedulerExampleTest; org.apache.karaf.itests.examples.ScrExampleTest; org.apache.karaf.itests.examples.ServletExampleTest; org.apache.karaf.itests.examples.SoapExampleTest; org.apache.karaf.itests.examples.WarExampleTest; org.apache.karaf.itests.examples.WebSocketExampleTest; org.apache.karaf.itests.features.EnterpriseFeaturesTest; org.apache.karaf.itests.features.PaxCdiFeaturesTest; org.apache.karaf.itests.features.SpecsFeaturesTest; org.apache.karaf.itests.features.Spring3FeaturesTest; org.apache.karaf.itests.ssh.BundleSshCommandSecurityTest; org.apache.karaf.itests.ssh.FeatureSshCommandSecurityTest; org.apache.karaf.itests.ssh.JaasSshCommandSecurityTest; org.apache.karaf.itests.ssh.KarSshCommandSecurityTest; org.apache.karaf.itests.ssh.ShellCommandSecurityTest; org.apache.karaf.itests.ssh.SshKeyFormatTest; org.apache.karaf.itests.ssh.SystemCommandSecurityTest
+PR-1840_build4,0.05,F3,org.apache.karaf.itests.DisabledLogoutTest; org.apache.karaf.itests.EquinoxTest; org.apache.karaf.itests.FeatureTest; org.apache.karaf.itests.examples.GraphQLExampleTest; org.apache.karaf.itests.examples.ScrExampleWithEquinoxTest; org.apache.karaf.itests.features.Spring43FeaturesTest; org.apache.karaf.itests.features.Spring52FeaturesTest; org.apache.karaf.itests.features.Spring53FeaturesTest; org.apache.karaf.itests.features.Spring61FeaturesTest; org.apache.karaf.itests.features.StandardFeaturesTest; org.apache.karaf.itests.ssh.ConfigSshCommandSecurityTest
+PR-1840_build4,0.05,F4,org.apache.karaf.itests.ConfigTest; org.apache.karaf.itests.examples.GraphQLExampleTest; org.apache.karaf.itests.FeatureTest; org.apache.karaf.itests.ssh.ConfigSshCommandSecurityTest
+PR-1840_build4,0.05,F6,org.apache.karaf.itests.examples.GraphQLExampleTest
+PR-1840_build4,0.1,F2,org.apache.karaf.itests.BundleTest; org.apache.karaf.itests.ConditionalFeaturesTest; org.apache.karaf.itests.DiagnosticTest; org.apache.karaf.itests.ExternalConfigTest; org.apache.karaf.itests.FelixHttpTest; org.apache.karaf.itests.GroovyTest; org.apache.karaf.itests.HttpTest; org.apache.karaf.itests.ImportServiceTest; org.apache.karaf.itests.InstanceTest; org.apache.karaf.itests.JaasTest; org.apache.karaf.itests.JavaSecurityTest; org.apache.karaf.itests.JmsTest; org.apache.karaf.itests.JndiTest; org.apache.karaf.itests.JtaTest; org.apache.karaf.itests.KarTest; org.apache.karaf.itests.LogTest; org.apache.karaf.itests.ObrTest; org.apache.karaf.itests.OverrideConfigTest; org.apache.karaf.itests.PackageTest; org.apache.karaf.itests.ServiceTest; org.apache.karaf.itests.SystemShutdownTest; org.apache.karaf.itests.SystemTest; org.apache.karaf.itests.WebTest; org.apache.karaf.itests.WrapperTest; org.apache.karaf.itests.examples.BlueprintExampleTest; org.apache.karaf.itests.examples.BundleExampleTest; org.apache.karaf.itests.examples.CamelExampleTest; org.apache.karaf.itests.examples.CdiExampleTest; org.apache.karaf.itests.examples.CommandExampleTest; org.apache.karaf.itests.examples.ConfigExampleTest; org.apache.karaf.itests.examples.DeployerExampleTest; org.apache.karaf.itests.examples.DumpExampleTest; org.apache.karaf.itests.examples.HttpResourceExampleTest; org.apache.karaf.itests.examples.JaasExampleTest; org.apache.karaf.itests.examples.JpaExampleTest; org.apache.karaf.itests.examples.LogAppenderExampleTest; org.apache.karaf.itests.examples.MBeanExampleTest; org.apache.karaf.itests.examples.NamespaceHandlerExampleTest; org.apache.karaf.itests.examples.RestExampleTest; org.apache.karaf.itests.examples.SchedulerExampleTest; org.apache.karaf.itests.examples.ScrExampleTest; org.apache.karaf.itests.examples.ServletExampleTest; org.apache.karaf.itests.examples.SoapExampleTest; org.apache.karaf.itests.examples.WarExampleTest; org.apache.karaf.itests.examples.WebSocketExampleTest; org.apache.karaf.itests.features.EnterpriseFeaturesTest; org.apache.karaf.itests.features.PaxCdiFeaturesTest; org.apache.karaf.itests.features.SpecsFeaturesTest; org.apache.karaf.itests.features.Spring3FeaturesTest; org.apache.karaf.itests.ssh.BundleSshCommandSecurityTest; org.apache.karaf.itests.ssh.FeatureSshCommandSecurityTest; org.apache.karaf.itests.ssh.JaasSshCommandSecurityTest; org.apache.karaf.itests.ssh.KarSshCommandSecurityTest; org.apache.karaf.itests.ssh.ShellCommandSecurityTest; org.apache.karaf.itests.ssh.SshKeyFormatTest; org.apache.karaf.itests.ssh.SystemCommandSecurityTest
+PR-1840_build4,0.1,F3,org.apache.karaf.itests.DisabledLogoutTest; org.apache.karaf.itests.EquinoxTest; org.apache.karaf.itests.examples.ScrExampleWithEquinoxTest; org.apache.karaf.itests.features.Spring43FeaturesTest; org.apache.karaf.itests.features.Spring52FeaturesTest; org.apache.karaf.itests.features.Spring53FeaturesTest; org.apache.karaf.itests.features.Spring61FeaturesTest
+PR-1840_build4,0.1,S,org.apache.karaf.itests.ConfigTest; org.apache.karaf.itests.features.Spring60FeaturesTest; org.apache.karaf.itests.features.StandardFeaturesTest
+PR-1840_build4,0.2,F2,org.apache.karaf.itests.BundleTest; org.apache.karaf.itests.ConditionalFeaturesTest; org.apache.karaf.itests.DiagnosticTest; org.apache.karaf.itests.FelixHttpTest; org.apache.karaf.itests.GroovyTest; org.apache.karaf.itests.InstanceTest; org.apache.karaf.itests.JaasTest; org.apache.karaf.itests.JavaSecurityTest; org.apache.karaf.itests.JndiTest; org.apache.karaf.itests.JtaTest; org.apache.karaf.itests.KarTest; org.apache.karaf.itests.LogTest; org.apache.karaf.itests.ObrTest; org.apache.karaf.itests.OverrideConfigTest; org.apache.karaf.itests.PackageTest; org.apache.karaf.itests.ServiceTest; org.apache.karaf.itests.SystemShutdownTest; org.apache.karaf.itests.SystemTest; org.apache.karaf.itests.WebTest; org.apache.karaf.itests.WrapperTest; org.apache.karaf.itests.examples.BlueprintExampleTest; org.apache.karaf.itests.examples.BundleExampleTest; org.apache.karaf.itests.examples.CamelExampleTest; org.apache.karaf.itests.examples.CdiExampleTest; org.apache.karaf.itests.examples.CommandExampleTest; org.apache.karaf.itests.examples.ConfigExampleTest; org.apache.karaf.itests.examples.DeployerExampleTest; org.apache.karaf.itests.examples.DumpExampleTest; org.apache.karaf.itests.examples.HttpResourceExampleTest; org.apache.karaf.itests.examples.JaasExampleTest; org.apache.karaf.itests.examples.LogAppenderExampleTest; org.apache.karaf.itests.examples.MBeanExampleTest; org.apache.karaf.itests.examples.NamespaceHandlerExampleTest; org.apache.karaf.itests.examples.RestExampleTest; org.apache.karaf.itests.examples.SchedulerExampleTest; org.apache.karaf.itests.examples.ScrExampleTest; org.apache.karaf.itests.examples.ServletExampleTest; org.apache.karaf.itests.examples.SoapExampleTest; org.apache.karaf.itests.examples.WarExampleTest; org.apache.karaf.itests.examples.WebSocketExampleTest; org.apache.karaf.itests.features.EnterpriseFeaturesTest; org.apache.karaf.itests.features.PaxCdiFeaturesTest; org.apache.karaf.itests.features.SpecsFeaturesTest; org.apache.karaf.itests.ssh.BundleSshCommandSecurityTest; org.apache.karaf.itests.ssh.JaasSshCommandSecurityTest; org.apache.karaf.itests.ssh.KarSshCommandSecurityTest; org.apache.karaf.itests.ssh.ShellCommandSecurityTest; org.apache.karaf.itests.ssh.SshKeyFormatTest; org.apache.karaf.itests.ssh.SystemCommandSecurityTest
+PR-1840_build4,0.2,F3,org.apache.karaf.itests.DisabledLogoutTest; org.apache.karaf.itests.features.Spring43FeaturesTest; org.apache.karaf.itests.features.Spring52FeaturesTest; org.apache.karaf.itests.features.Spring53FeaturesTest; org.apache.karaf.itests.features.Spring61FeaturesTest
+PR-1840_build4,0.2,S,org.apache.karaf.itests.features.Spring3FeaturesTest
+PR-1840_build6,0.05,F3,org.apache.karaf.itests.JMXSecurityTest; org.apache.karaf.itests.XATest; org.apache.karaf.itests.examples.JmsExampleTest
+PR-1840_build6,0.1,F3,org.apache.karaf.itests.JMXSecurityTest; org.apache.karaf.itests.examples.JmsExampleTest
+PR-1840_build6,0.1,S,org.apache.karaf.itests.XATest
+PR-1840_build6,0.2,F3,org.apache.karaf.itests.JMXSecurityTest
+PR-1840_build7,0.05,F2,org.apache.karaf.itests.examples.CamelExampleTest
+PR-1840_build7,0.1,F2,org.apache.karaf.itests.examples.CamelExampleTest
+PR-1840_build7,0.2,F2,org.apache.karaf.itests.examples.CamelExampleTest

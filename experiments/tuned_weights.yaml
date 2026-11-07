@@ -1,0 +1,13 @@
+llm:
+  w: 0.6
+  objective: sapfdc_mean@0.10
+  value: 0.6771
+  dev_builds: 10
+  grid_file: results/tuning/dev_grid_llm.csv
+  llm_run: DEV_prompt_v1
+tfidf:
+  w: 1.0
+  objective: sapfdc_mean@0.10
+  value: 0.6569
+  dev_builds: 10
+  grid_file: results/tuning/dev_grid_tfidf.csv

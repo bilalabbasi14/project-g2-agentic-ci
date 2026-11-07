@@ -1,0 +1,11 @@
+RQ1:   {target: LLM-relevance,  against: [DANTE-CCH, DANTE-CCH-shipped]}
+RQ3:   {target: Agent-weighted, against: [DANTE-CCH, Tuned-weight (LLM)]}
+E3:    {target: Full system,    against: [DANTE-CCH, DANTE-CCH-shipped, Random]}
+E1:    {target: Full system,    against: [Single-call LLM, Tuned-weight (TF-IDF), History-only, TF-IDF-only]}
+E5:    {target: Full system,    against: [LLM-relevance, Agent-weighted (TF-IDF)]}
+friedman_sets:
+  RQ1: [LLM-relevance, DANTE-CCH, DANTE-CCH-shipped]
+  RQ3: [Agent-weighted, DANTE-CCH, Tuned-weight (LLM)]
+  ALL: [Full system, Agent-weighted, LLM-relevance, Tuned-weight (LLM), Single-call LLM, Tuned-weight (TF-IDF), DANTE-CCH, DANTE-CCH-shipped, History-only, TF-IDF-only, Random]
+metrics: [dtc, sapfdc]
+budgets: [0.05, 0.10, 0.20]

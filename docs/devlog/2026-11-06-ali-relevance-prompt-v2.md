@@ -24,4 +24,17 @@ The same measure is taken again for v1 on the dev split (`share_rel_le_0_2` in `
 
 ## Measured effect
 
-To be filled from `results/dev/prompt_comparison.csv` after the two dev-split Kaggle runs (`DEV_prompt_v1`, `DEV_prompt_v2`; seed 1; methods `LLM-relevance`, `DANTE-CCH`). The numbers will be `sapfdc_mean_10`, `dtc_mean_10`, `share_rel_le_0_2`, `share_rel_ge_0_5`, `fallback_builds` and `mean_latency_s` per prompt, with the decision and the resulting `relevance_prompt_version` in `config.yaml`. No test-split run is made for this choice.
+Two Kaggle runs on the **dev split only**: 10 builds, seed 1, methods `LLM-relevance` and `DANTE-CCH`. Both ran from commit fbe1b2b on 2 × T4 (`qwen2.5-coder:7b`), with no fallbacks and no failed builds (`results/DEV_prompt_v1/run_meta.json`, `results/DEV_prompt_v2/run_meta.json`). No test-split run was made. The numbers are in `results/dev/prompt_comparison.csv`, written by `python -m src.agent.prompt_eval --runs results/DEV_prompt_v1 results/DEV_prompt_v2`:
+
+| prompt | builds | sapfdc_mean_10 | dtc_mean_10 | share_rel_le_0_2 | share_rel_ge_0_5 | fallback_builds | mean_latency_s |
+|---|---|---|---|---|---|---|---|
+| v1 | 10 | 0.6725 | 0.7167 | 0.976 | 0.024 | 0 | 3.19 |
+| v2 | 10 | 0.6671 | 0.7167 | 0.112 | 0.053 | 0 | 3.40 |
+
+- **Calibration.** v2 does fix the calibration problem. The share of scores at or below 0.2 drops from 97.6% (v1; the Phase 1 problem reproduced on dev) to 11.2%. The share at or above 0.5 rises only from 2.4% to 5.3%, so v2 mostly moves scores to the 0.3 anchor ("same subsystem").
+- **Ranking.** This barely changes the ranking. The mean %DTC at 10% is identical (0.7167), and on every dev build each prompt finds the same failing tests. The mean SAPFDc at 10% is 0.0054 lower for v2. Most of that comes from one build, `PR-1377_build4` (0.473 with v1, 0.418 with v2), visible in both runs' `per_build.csv`.
+- **Cost.** v2 costs about 7% more latency per call (3.40 s against 3.19 s) because its prompt is longer.
+
+**Decision**, by the rule fixed before the runs: the higher `sapfdc_mean_10` wins unless the two are within 0.005. The difference is 0.0054, above the margin, so **v1** is chosen, and `relevance_prompt_version` stays `v1` in `config.yaml`.
+
+The better calibration of v2 is therefore not used for the reported results. That is a negative result for this prompt change, reported as measured. P2-11 uses `results/DEV_prompt_v1/llm_relevance.csv` (the chosen prompt's dev scores).

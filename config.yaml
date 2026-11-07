@@ -62,7 +62,7 @@ llm_p2:
   max_retries: 1                           # one retry after timeout / invalid output
   cache: true
   cache_dir: cache/llm
-  relevance_prompt_version: v1             # P2-07 may change this to v2 (decided on dev split)
+  relevance_prompt_version: v1             # chosen on the dev split in P2-07 (results/dev/prompt_comparison.csv)
 orchestrator:
   max_tool_calls: 4
   min_confidence: 0.3

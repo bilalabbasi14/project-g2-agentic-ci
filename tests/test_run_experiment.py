@@ -259,3 +259,24 @@ def test_merge_drops_failed_builds_that_later_succeeded(tmp_path):
     merge_shards.merge_run(run_dir)
     merged = json.loads((run_dir / "run_meta.json").read_text(encoding="utf-8"))
     assert [f["build"] for f in merged["failed_builds"]] == ["B2"]   # B1 now has rows, so it is not failed
+
+
+def test_notebook_does_not_depend_on_the_working_directory():
+    """Re-running cell 8 after cell 9 must work: no os.chdir outside the clone cell,
+    and every command that runs repository code passes cwd=REPO (P2-35)."""
+    from pathlib import Path
+    nb = json.loads((Path(__file__).resolve().parent.parent / "experiments" / "kaggle_runner.ipynb")
+                    .read_text(encoding="utf-8"))
+    code = ["".join(c["source"]) for c in nb["cells"] if c["cell_type"] == "code"]
+    clone = [c for c in code if "GITHUB_TOKEN" in c]
+    assert len(clone) == 1
+    for cell in code:
+        if cell is not clone[0]:
+            assert "os.chdir" not in cell, cell[:80]
+        for line in cell.splitlines():
+            if "subprocess." in line and any(k in line for k in ("uv venv", "uv pip", "experiments.", "Popen(cmd")):
+                assert "cwd=REPO" in line, line
+    run_cell = next(c for c in code if "experiments.run_experiment" in c)
+    assert run_cell.count("cwd=REPO") == 2                       # both shards and merge_shards
+    package_cell = next(c for c in code if "make_archive" in c)
+    assert '"/kaggle/working"' in package_cell and "os.chdir" not in package_cell

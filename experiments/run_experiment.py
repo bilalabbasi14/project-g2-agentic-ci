@@ -27,8 +27,9 @@ import pandas as pd
 import yaml
 
 from src.agent.llm_provider import MockProvider, make_provider
+from src.dante.compare_stored import load_stored
 from src.obs.trace import TraceLogger
-from src.pipeline import Components, RunContext, load_method_specs, load_tuned_weights, run_builds
+from src.pipeline import STORED_METHOD, Components, RunContext, load_method_specs, load_tuned_weights, run_builds
 from src.settings import load_config, repo_path
 
 CONFIG_DIR = Path(__file__).resolve().parent / "configs"
@@ -104,6 +105,13 @@ def _import_component(module, cls, issue, method):
         raise SystemExit(f"method {method!r} needs {module}.{cls} from {issue}, which is not merged yet")
 
 
+def stored_solution(cfg, build_name, budget, strategy):
+    """DANTE's stored solution for one build and budget (the DANTE-CCH (stored) rows).
+
+    load_stored is looked up at call time, so tests can replace it."""
+    return load_stored(cfg, build_name, budget, strategy)
+
+
 def make_components(cfg, specs, provider_kind, base_url, seed, trace):
     """One provider per component; only the components the methods need."""
     def provider(component, mock_answers):
@@ -115,6 +123,9 @@ def make_components(cfg, specs, provider_kind, base_url, seed, trace):
 
     sources = {s.relevance_source for s in specs}
     comps = Components(tuned_weights=load_tuned_weights(cfg["tuning"]["tuned_weights_file"]))
+    if any(s.name == STORED_METHOD for s in specs):
+        # without a loader, src.pipeline skips DANTE-CCH (stored) without an error (P2-37)
+        comps.stored_loader = stored_solution
     if sources & {"llm_shortlist", "llm_all_individual"}:
         comps.relevance_provider = provider("semantic_analyzer", [mock_relevance])
     agent = [s for s in specs if s.weight_mode == "agent"]
@@ -136,6 +147,9 @@ def make_components(cfg, specs, provider_kind, base_url, seed, trace):
             # full answer for ~200 candidates is about 8,600-8,900 tokens (review of PR #52)
             from src.agent.single_call import make_single_call_provider
             sc_provider = make_single_call_provider(cfg, base_url=base_url, seed=seed)
+            # one call scores every candidate (~200) and takes longer than llm.timeout_s on a T4, so the
+            # single call gets single_call.timeout_s; every other component keeps llm.timeout_s (P2-37)
+            getattr(sc_provider, "inner", sc_provider).timeout_s = cfg["single_call"]["timeout_s"]
         comps.single_call = cls(sc_provider, cfg, trace=trace)
     if any(s.weight_mode == "tuned" and s.tuned_key not in comps.tuned_weights for s in specs):
         missing = sorted({s.tuned_key for s in specs if s.weight_mode == "tuned"} - set(comps.tuned_weights))

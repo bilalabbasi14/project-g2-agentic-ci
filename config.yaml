@@ -80,6 +80,7 @@ single_call:
   max_diff_chars: 3000
   num_ctx: 16384
   prompt_version: sc1
+  timeout_s: 480                           # max(300, ceil(2 x slowest llm_latency_s in results/DEV_single_call_timing)), rounded up to 60 s (P2-37, dev split only)
 tuning:
   w_grid: [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.6666667, 0.7, 0.8, 0.9, 1.0]
   objective_budget: 0.10                   # maximise mean SAPFDc at this budget on the dev split

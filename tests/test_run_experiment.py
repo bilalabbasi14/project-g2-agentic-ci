@@ -304,3 +304,113 @@ def test_kaggle_config_matches_config_except_paths():
     assert set(a) == set(b)
     differ = {k for k in a if a[k] != b[k]}
     assert differ <= path_keys, sorted(differ - path_keys)
+
+
+# ------------------------------------------- P2-37: stored loader and single-call timeout ----
+
+STORED = {"total_failures_in_build": 2, "failures_found": 1, "selected_tests_count": 1,
+          "detailed_selection": [{"fqn": "p.a.CacheTest", "duration": 10.0, "did_fail": True}]}
+
+
+def _stored_name(key):
+    return f"karaf_build_{key.split('_')[0]}_1_single_tfidf_specific_boosted_False"
+
+
+def _phase1_cfg(tmp_path):
+    """Config whose Phase 1 build list (paths.eval_builds) holds the first two synthetic builds."""
+    cfg = _cfg(tmp_path)
+    builds = tmp_path / "eval_builds.csv"
+    pd.DataFrame({"build_name": [_stored_name(k) for k in KEYS[:2]], "key": KEYS[:2],
+                  "pr_name": [k.split("_")[0] for k in KEYS[:2]], "build_id": 1,
+                  "stage_id": "single"}).to_csv(builds, index=False)
+    cfg["paths"]["eval_builds"] = str(builds)
+    return cfg
+
+
+def test_stored_loader_is_set_only_for_the_stored_method(tmp_path):
+    from experiments.run_experiment import make_components, stored_solution
+    from src.pipeline import load_method_specs
+    cfg = _cfg(tmp_path)
+    comps = make_components(cfg, load_method_specs(names=["DANTE-CCH", "DANTE-CCH (stored)"]), "mock", None, 1,
+                            trace=None)
+    assert comps.stored_loader is stored_solution
+    comps = make_components(cfg, load_method_specs(names=["DANTE-CCH", "DANTE-CCH-shipped"]), "mock", None, 1,
+                            trace=None)
+    assert comps.stored_loader is None
+
+
+def test_e2_stored_writes_the_stored_rows(tmp_path, monkeypatch):
+    """Before P2-37 the runner never set the loader and the stored rows were silently missing."""
+    import experiments.run_experiment as runner
+    calls = []
+
+    def fake_load_stored(cfg, build_name, budget, strategy):
+        calls.append((build_name, budget, strategy))
+        return STORED
+
+    monkeypatch.setattr(runner, "load_stored", fake_load_stored)
+    meta = main(["--exp", "E2_stored", "--seed", "1", "--provider", "mock"], cfg=_phase1_cfg(tmp_path),
+                loader=KeyedLoader(), echo=lambda *_: None)
+    assert meta["failed_builds"] == []
+    rows = _rows(tmp_path / "results" / "E2_stored_phase1_seed1" / "per_build.csv")
+    assert len(rows) == 2 * 3 * 3                                # 2 builds x 3 methods x 3 budgets
+    stored = [r for r in rows if r["method"] == "DANTE-CCH (stored)"]
+    assert len(stored) == 2 * 3 and {r["ranking_source"] for r in stored} == {"stored"}
+    assert {float(r["dtc"]) for r in stored} == {0.5}             # 1 of 2 failures found
+    assert sorted(calls) == sorted((_stored_name(k), b, "DANTE-CCH") for k in KEYS[:2] for b in (0.05, 0.1, 0.2))
+
+
+def test_without_the_stored_method_nothing_is_loaded(tmp_path, monkeypatch):
+    import experiments.run_experiment as runner
+
+    def must_not_be_called(*a):
+        raise AssertionError("load_stored called although DANTE-CCH (stored) was not requested")
+
+    monkeypatch.setattr(runner, "load_stored", must_not_be_called)
+    meta = main(["--exp", "E2_stored", "--seed", "1", "--provider", "mock", "--methods", "DANTE-CCH",
+                 "DANTE-CCH-shipped"], cfg=_phase1_cfg(tmp_path), loader=KeyedLoader(), echo=lambda *_: None)
+    assert meta["failed_builds"] == []
+    rows = _rows(tmp_path / "results" / "E2_stored_phase1_seed1" / "per_build.csv")
+    assert len(rows) == 2 * 2 * 3 and not [r for r in rows if r["method"] == "DANTE-CCH (stored)"]
+
+
+def _ollama_components(tmp_path, cache, names):
+    """make_components with real OllamaProviders (no request is sent), distinct timeouts per key."""
+    from experiments.run_experiment import make_components
+    from src.pipeline import load_method_specs
+    cfg = _cfg(tmp_path)
+    cfg["llm_p2"]["cache"] = cache
+    cfg["llm_p2"]["cache_dir"] = str(tmp_path / "llm_cache")
+    cfg["llm"]["timeout_s"], cfg["single_call"]["timeout_s"] = 60, 840
+    return make_components(cfg, load_method_specs(names=names), "ollama", "http://127.0.0.1:11435", 1, trace=None)
+
+
+def _timeout(provider):
+    return getattr(provider, "inner", provider).timeout_s
+
+
+@pytest.mark.parametrize("cache", [True, False])
+def test_single_call_provider_gets_single_call_timeout(tmp_path, cache):
+    pytest.importorskip("src.agent.single_call")
+    comps = _ollama_components(tmp_path, cache, ["Single-call LLM"])
+    assert _timeout(comps.single_call.provider) == 840
+
+
+@pytest.mark.parametrize("cache", [True, False])
+def test_other_components_keep_llm_timeout(tmp_path, cache):
+    pytest.importorskip("src.agent.single_call")
+    pytest.importorskip("src.agent.explainer")
+    comps = _ollama_components(tmp_path, cache, ["Full system", "Single-call LLM"])
+    others = {"semantic_analyzer": comps.relevance_provider, "orchestrator": comps.orchestrator.provider,
+              "explainer": comps.explainer.provider}
+    assert {name: _timeout(p) for name, p in others.items()} == dict.fromkeys(others, 60)
+    assert _timeout(comps.single_call.provider) == 840
+
+
+def test_single_call_timeout_is_set_in_both_configs():
+    from pathlib import Path
+    import yaml
+    root = Path(__file__).resolve().parent.parent
+    values = [yaml.safe_load((root / name).read_text(encoding="utf-8"))["single_call"]["timeout_s"]
+              for name in ("config.yaml", "config_kaggle.yaml")]
+    assert values[0] == values[1] and values[0] > 60

@@ -1,0 +1,11 @@
+build,relevance_source,w,confidence,source,steps,llm_calls,tool_calls,reason,fallback_reason
+PR-1361_build1,llm_shortlist,0.5,0.8,agent,1,1,0,the change is focused and two tests have high relevance,
+PR-1363_build1,llm_shortlist,0.5,0.8,agent,1,1,0,the change is focused and two tests have high relevance,
+PR-1368_build1,llm_shortlist,0.5,0.8,agent,1,1,0,the change is focused and two tests have high relevance,
+PR-1375_build1,llm_shortlist,0.5,0.8,agent,1,1,0,the change is focused and two tests have high relevance,
+PR-1377_build3,llm_shortlist,0.5,0.8,agent,1,1,0,the change is focused and two tests have high relevance,
+PR-1377_build4,llm_shortlist,0.5,0.8,agent,1,1,0,the change is focused and two tests have high relevance,
+PR-1379_build1,llm_shortlist,0.5,0.8,agent,1,1,0,the change is focused and two tests have high relevance,
+PR-1384_build1,llm_shortlist,0.5,0.8,agent,1,1,0,the change is focused and two tests have high relevance,
+PR-1390_build2,llm_shortlist,0.5,0.8,agent,1,1,0,the change is focused and two tests have high relevance,
+PR-1391_build2,llm_shortlist,0.5,0.8,agent,1,1,0,the change is focused and two tests have high relevance,

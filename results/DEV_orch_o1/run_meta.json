@@ -1,0 +1,42 @@
+{
+  "run_id": "DEV_orch_o1",
+  "experiment": "DEV",
+  "split": "dev",
+  "seed": 1,
+  "git_commit": "a11b865727a807f169d3cb53428b4c6450bce386",
+  "model": "qwen2.5-coder:7b",
+  "prompt_versions": {
+    "relevance": "v1",
+    "orchestrator": "o1",
+    "explainer": "e1",
+    "single_call": "sc1"
+  },
+  "methods": [
+    "Agent-weighted",
+    "LLM-relevance",
+    "DANTE-CCH"
+  ],
+  "budgets": [
+    0.05,
+    0.1,
+    0.2
+  ],
+  "config_file": "config_kaggle.yaml",
+  "started": "2026-11-07T03:18:52+00:00",
+  "finished": "2026-11-07T03:23:20+00:00",
+  "n_builds": 10,
+  "failed_builds": [],
+  "host": "kaggle-t4x2",
+  "provider": "ollama",
+  "skipped_existing": [],
+  "shards": [
+    [
+      0,
+      2
+    ],
+    [
+      1,
+      2
+    ]
+  ]
+}

@@ -68,7 +68,7 @@ orchestrator:
   min_confidence: 0.3
   fallback_w: 0.6666667
   observation_max_chars: 1500
-  prompt_version: o1
+  prompt_version: o2                       # o1 copied its example values on dev (P2-06)
 explainer:
   top_n_skipped: 5
   candidate_pool: 20

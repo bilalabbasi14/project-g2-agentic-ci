@@ -1,0 +1,11 @@
+build,relevance_source,w,confidence,source,steps,llm_calls,tool_calls,reason,fallback_reason
+PR-1361_build1,llm_shortlist,0.3,0.8,agent,1,1,0,Low relevance signal and weak history indicate a need to trust relevance more.,
+PR-1363_build1,llm_shortlist,0.7,0.8,agent,1,1,0,"High relevance signal from the changed file and shortlisted tests, with a focused change in one file and folder.",
+PR-1368_build1,llm_shortlist,0.8,0.9,agent,1,1,0,High relevance signal with a focused change in a single file.,
+PR-1375_build1,llm_shortlist,0.3,0.8,agent,1,1,0,Low relevance signal and weak history indicate a need to trust relevance more.,
+PR-1377_build3,llm_shortlist,0.2,0.8,agent,1,1,0,"Low relevance signal and weak history, suggesting a balanced approach.",
+PR-1377_build4,llm_shortlist,0.7,0.8,agent,1,1,0,High relevance signal with a single changed file and folder.,
+PR-1379_build1,llm_shortlist,0.3,0.8,agent,1,1,0,"Low relevance signal and weak history, with a focused change in a single file.",
+PR-1384_build1,llm_shortlist,0.5,0.3,agent,1,1,0,"The relevance signal is weak and flat, with all shortlisted relevances similar, and the history signal is also not very informative.",
+PR-1390_build2,llm_shortlist,0.2,0.8,agent,1,1,0,"Low relevance signal and weak history, with only one changed file and folder.",
+PR-1391_build2,llm_shortlist,0.7,0.8,agent,1,1,0,High relevance signal with a focused change in a single file.,

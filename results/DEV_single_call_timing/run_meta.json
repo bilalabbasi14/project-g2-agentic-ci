@@ -1,0 +1,40 @@
+{
+  "run_id": "DEV_single_call_timing",
+  "experiment": "DEV",
+  "split": "dev",
+  "seed": 1,
+  "git_commit": "6ad3928495ff5564da771d5efb95577cad8272f4",
+  "model": "qwen2.5-coder:7b",
+  "prompt_versions": {
+    "relevance": "v1",
+    "orchestrator": "o2",
+    "explainer": "e1",
+    "single_call": "sc1"
+  },
+  "methods": [
+    "Single-call LLM"
+  ],
+  "budgets": [
+    0.05,
+    0.1,
+    0.2
+  ],
+  "config_file": "config_kaggle.yaml",
+  "started": "2026-11-07T18:27:02+00:00",
+  "finished": "2026-11-07T18:42:10+00:00",
+  "n_builds": 10,
+  "failed_builds": [],
+  "host": "kaggle-t4x2",
+  "provider": "ollama",
+  "skipped_existing": [],
+  "shards": [
+    [
+      0,
+      2
+    ],
+    [
+      1,
+      2
+    ]
+  ]
+}

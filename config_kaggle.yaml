@@ -1,0 +1,95 @@
+# Kaggle configuration: the same keys as config.yaml with Kaggle paths (P2-16).
+# Select it with G2_CONFIG=config_kaggle.yaml. Inputs are the attached datasets
+# (data/README.md); everything the run writes goes under /kaggle/working.
+
+project: karaf
+
+paths:
+  # LRTS processed dataset root (contains dataset.csv, processed_test_result/, shadata/)
+  lrts_root: /kaggle/input/datasets/connectwithali27/karaf-data/g2-karaf-data/lrts
+  # DANTE replication package (extracted subset: src/, experiments/RQ1/)
+  dante_root: /kaggle/input/datasets/connectwithali27/karaf-data/g2-karaf-data/dante
+  # Stored DANTE-CCH / Random solution JSONs for karaf (Budget_XX_Percent/<build>/<strategy>.json)
+  dante_solutions: /kaggle/input/datasets/connectwithali27/karaf-data/g2-karaf-data/dante/rq2_karaf
+  # No git clone on Kaggle: test sources come from the source cache (paths_p2.source_cache)
+  repo_clone: ""
+  repo_url: https://github.com/apache/karaf.git
+  worktree_dir: ""
+  # Repo-relative paths
+  eval_builds: data_eval/eval_builds.csv
+  results_dir: /kaggle/working/results
+  logs_dir: /kaggle/working/logs
+
+# Selection budgets as a fraction of total suite duration
+budgets: [0.05, 0.10, 0.20]
+
+history:
+  num_builds: 100            # NUM_BUILDS_FOR_PROB_MODEL in DANTE experiment_config.py
+  lookback_windows: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+  min_sticky_events: 20      # MIN_STICKY_EVENTS_FOR_CONFIDENCE
+
+dante:
+  weight_history: 1.0        # WEIGHT_ULTIMATE_HISTORY
+  weight_relevance: 0.5      # WEIGHT_ULTIMATE_RELEVANCE (selection, RQ2)
+  weight_relevance_rq1: 1.0  # PRIORITIZATION_MODE_CONFIG override in run_prioritization.py (RQ1)
+  relevance_power: 1.2       # RELEVANCE_POWER
+  random_seed: 42
+
+llm:
+  provider: ollama
+  model: qwen2.5-coder:7b
+  base_url: http://localhost:11434
+  timeout_s: 60
+  temperature: 0.0
+  json_mode: true
+  max_diff_chars: 3000
+  max_test_chars: 3000
+
+shortlist:
+  k: 10                      # top-K by history score and top-K by TF-IDF score (union)
+
+fallback:
+  scope: build               # build: any failed call -> whole build uses DANTE ranking
+  min_confidence: 0.3        # responses reporting confidence below this count as low confidence
+
+# ---------------- Phase 2 ----------------
+eval:
+  eval_set: data_eval/eval_builds_p2.csv   # written by P2-08
+  seeds: [1, 2, 3]
+  explainer_seeds: [1]                     # explainer runs only for these seeds
+llm_p2:
+  seed: 1                                  # default; runs override with --seed
+  num_ctx: 8192                            # context window per call (single-call uses its own)
+  max_retries: 1                           # one retry after timeout / invalid output
+  cache: true
+  cache_dir: /kaggle/working/cache/llm
+  relevance_prompt_version: v1             # P2-07 may change this to v2 (decided on dev split)
+orchestrator:
+  max_tool_calls: 4
+  min_confidence: 0.3
+  fallback_w: 0.6666667
+  observation_max_chars: 1500
+  prompt_version: o1
+explainer:
+  top_n_skipped: 5
+  candidate_pool: 20
+  max_justification_chars: 400
+  max_changed_files: 10
+  prompt_version: e1
+single_call:
+  max_tests: 400
+  max_diff_chars: 3000
+  num_ctx: 16384
+  prompt_version: sc1
+tuning:
+  w_grid: [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.6666667, 0.7, 0.8, 0.9, 1.0]
+  objective_budget: 0.10                   # maximise mean SAPFDc at this budget on the dev split
+  tuned_weights_file: experiments/tuned_weights.yaml
+ablation:
+  no_shortlist_builds: 20                  # size of the test-split sample for the no-shortlist ablation
+  no_shortlist_seed: 1
+trace:
+  dir: /kaggle/working/logs/traces
+  max_text_chars: 8000
+paths_p2:
+  source_cache: /kaggle/input/datasets/connectwithali27/g2-source-cache/g2-source-cache   # attached dataset (P2-09), mount checked on Kaggle

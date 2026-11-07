@@ -1,0 +1,6 @@
+# E3 Proposed system, plus E4 Gaps 1 and 3 in the same pass (they share the LLM work).
+experiment: E3
+split: test
+seeds: [1, 2, 3]
+budgets: [0.05, 0.10, 0.20]
+methods: [DANTE-CCH, DANTE-CCH-shipped, LLM-relevance, Tuned-weight (LLM), Agent-weighted, Full system]

@@ -1,0 +1,7 @@
+# E5 no-shortlist ablation: the LLM scores every candidate (compute limit: 20 test builds, seed 1).
+experiment: E5_noshortlist
+split: test
+seeds: [1]
+budgets: [0.05, 0.10, 0.20]
+build_limit: 20
+methods: [Full system (no shortlist)]

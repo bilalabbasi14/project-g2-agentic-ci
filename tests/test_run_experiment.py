@@ -110,11 +110,44 @@ def test_unknown_method_is_a_clear_error(tmp_path):
     assert "Nope" in str(e.value) and "valid names" in str(e.value)
 
 
-def test_missing_component_names_its_issue(tmp_path):
+def test_missing_component_names_its_issue(tmp_path, monkeypatch):
+    # simulate a component that is not merged: importing its module fails
+    # (independent of which issues are actually merged)
+    import sys
+    monkeypatch.setitem(sys.modules, "src.agent.single_call", None)
     with pytest.raises(SystemExit) as e:
         main(["--exp", "DEV", "--seed", "1", "--provider", "mock", "--methods", "Single-call LLM"],
              cfg=_cfg(tmp_path), loader=KeyedLoader(), echo=lambda *_: None)
-    assert "P2-17" in str(e.value)
+    assert "P2-17" in str(e.value) and "not merged yet" in str(e.value)
+
+
+def test_mock_single_call_takes_the_success_path(tmp_path):
+    pytest.importorskip("src.agent.single_call")
+    main(["--exp", "DEV", "--seed", "1", "--provider", "mock", "--methods", "Single-call LLM",
+          "--build-limit", "1"], cfg=_cfg(tmp_path), loader=KeyedLoader(), echo=lambda *_: None)
+    rows = _rows(tmp_path / "results" / "DEV_dev_seed1" / "per_build.csv")
+    assert rows and {r["ranking_source"] for r in rows} == {"llm"}            # no fallback
+    assert {r["llm_calls"] for r in rows} == {"1"}
+
+
+@pytest.mark.parametrize("cache", [True, False])
+def test_runner_single_call_provider_uses_single_call_num_ctx(tmp_path, cache):
+    """With Ollama, the single call must get single_call.num_ctx (16384), not llm_p2.num_ctx (8192)."""
+    pytest.importorskip("src.agent.single_call")
+    from experiments.run_experiment import make_components
+    from src.pipeline import load_method_specs
+    cfg = _cfg(tmp_path)
+    cfg["llm_p2"]["cache"] = cache
+    cfg["llm_p2"]["cache_dir"] = str(tmp_path / "llm_cache")
+    comps = make_components(cfg, load_method_specs(names=["Single-call LLM"]), "ollama",
+                            "http://127.0.0.1:11435", 2, trace=None)
+    p = comps.single_call.provider
+    inner = getattr(p, "inner", p)
+    assert cfg["single_call"]["num_ctx"] == 16384 != cfg["llm_p2"]["num_ctx"]
+    assert inner.num_ctx == 16384 and inner.request_options(0)["num_ctx"] == 16384
+    assert inner.base_url == "http://127.0.0.1:11435"
+    if cache:
+        assert p.options_for(0)["num_ctx"] == 16384
 
 
 def test_experiment_configs_load():

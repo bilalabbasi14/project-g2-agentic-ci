@@ -1,0 +1,42 @@
+{
+  "run_id": "E2_stored_phase1_seed1",
+  "experiment": "E2_stored",
+  "split": "phase1",
+  "seed": 1,
+  "git_commit": "e63cf0bcbb1c5fd1b45547230d6ac5d8cbfc53cf",
+  "model": "qwen2.5-coder:7b",
+  "prompt_versions": {
+    "relevance": "v1",
+    "orchestrator": "o2",
+    "explainer": "e1",
+    "single_call": "sc1"
+  },
+  "methods": [
+    "DANTE-CCH",
+    "DANTE-CCH-shipped",
+    "DANTE-CCH (stored)"
+  ],
+  "budgets": [
+    0.05,
+    0.1,
+    0.2
+  ],
+  "config_file": "config_kaggle.yaml",
+  "started": "2026-11-07T23:31:26+00:00",
+  "finished": "2026-11-07T23:32:04+00:00",
+  "n_builds": 50,
+  "failed_builds": [],
+  "host": "kaggle-t4x2",
+  "provider": "ollama",
+  "skipped_existing": [],
+  "shards": [
+    [
+      0,
+      2
+    ],
+    [
+      1,
+      2
+    ]
+  ]
+}

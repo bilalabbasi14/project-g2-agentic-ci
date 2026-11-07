@@ -1,0 +1,5 @@
+scope,budget,n,share_sound,share_partly,share_unsound,kappa,rq2_sound_condition_holds
+overall,,100,0.64,0.06,0.3,0.7051,False
+budget,0.05,34,0.7647,0.0882,0.1471,0.7051,
+budget,0.1,33,0.7576,0.0303,0.2121,0.7051,
+budget,0.2,33,0.3939,0.0606,0.5455,0.7051,

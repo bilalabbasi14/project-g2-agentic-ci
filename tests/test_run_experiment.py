@@ -110,11 +110,44 @@ def test_unknown_method_is_a_clear_error(tmp_path):
     assert "Nope" in str(e.value) and "valid names" in str(e.value)
 
 
-def test_missing_component_names_its_issue(tmp_path):
+def test_missing_component_names_its_issue(tmp_path, monkeypatch):
+    # simulate a component that is not merged: importing its module fails
+    # (independent of which issues are actually merged)
+    import sys
+    monkeypatch.setitem(sys.modules, "src.agent.single_call", None)
     with pytest.raises(SystemExit) as e:
         main(["--exp", "DEV", "--seed", "1", "--provider", "mock", "--methods", "Single-call LLM"],
              cfg=_cfg(tmp_path), loader=KeyedLoader(), echo=lambda *_: None)
-    assert "P2-17" in str(e.value)
+    assert "P2-17" in str(e.value) and "not merged yet" in str(e.value)
+
+
+def test_mock_single_call_takes_the_success_path(tmp_path):
+    pytest.importorskip("src.agent.single_call")
+    main(["--exp", "DEV", "--seed", "1", "--provider", "mock", "--methods", "Single-call LLM",
+          "--build-limit", "1"], cfg=_cfg(tmp_path), loader=KeyedLoader(), echo=lambda *_: None)
+    rows = _rows(tmp_path / "results" / "DEV_dev_seed1" / "per_build.csv")
+    assert rows and {r["ranking_source"] for r in rows} == {"llm"}            # no fallback
+    assert {r["llm_calls"] for r in rows} == {"1"}
+
+
+@pytest.mark.parametrize("cache", [True, False])
+def test_runner_single_call_provider_uses_single_call_num_ctx(tmp_path, cache):
+    """With Ollama, the single call must get single_call.num_ctx (16384), not llm_p2.num_ctx (8192)."""
+    pytest.importorskip("src.agent.single_call")
+    from experiments.run_experiment import make_components
+    from src.pipeline import load_method_specs
+    cfg = _cfg(tmp_path)
+    cfg["llm_p2"]["cache"] = cache
+    cfg["llm_p2"]["cache_dir"] = str(tmp_path / "llm_cache")
+    comps = make_components(cfg, load_method_specs(names=["Single-call LLM"]), "ollama",
+                            "http://127.0.0.1:11435", 2, trace=None)
+    p = comps.single_call.provider
+    inner = getattr(p, "inner", p)
+    assert cfg["single_call"]["num_ctx"] == 16384 != cfg["llm_p2"]["num_ctx"]
+    assert inner.num_ctx == 16384 and inner.request_options(0)["num_ctx"] == 16384
+    assert inner.base_url == "http://127.0.0.1:11435"
+    if cache:
+        assert p.options_for(0)["num_ctx"] == 16384
 
 
 def test_experiment_configs_load():
@@ -228,6 +261,27 @@ def test_merge_drops_failed_builds_that_later_succeeded(tmp_path):
     assert [f["build"] for f in merged["failed_builds"]] == ["B2"]   # B1 now has rows, so it is not failed
 
 
+def test_notebook_does_not_depend_on_the_working_directory():
+    """Re-running cell 8 after cell 9 must work: no os.chdir outside the clone cell,
+    and every command that runs repository code passes cwd=REPO (P2-35)."""
+    from pathlib import Path
+    nb = json.loads((Path(__file__).resolve().parent.parent / "experiments" / "kaggle_runner.ipynb")
+                    .read_text(encoding="utf-8"))
+    code = ["".join(c["source"]) for c in nb["cells"] if c["cell_type"] == "code"]
+    clone = [c for c in code if "GITHUB_TOKEN" in c]
+    assert len(clone) == 1
+    for cell in code:
+        if cell is not clone[0]:
+            assert "os.chdir" not in cell, cell[:80]
+        for line in cell.splitlines():
+            if "subprocess." in line and any(k in line for k in ("uv venv", "uv pip", "experiments.", "Popen(cmd")):
+                assert "cwd=REPO" in line, line
+    run_cell = next(c for c in code if "experiments.run_experiment" in c)
+    assert run_cell.count("cwd=REPO") == 2                       # both shards and merge_shards
+    package_cell = next(c for c in code if "make_archive" in c)
+    assert '"/kaggle/working"' in package_cell and "os.chdir" not in package_cell
+
+
 def test_kaggle_config_matches_config_except_paths():
     """config_kaggle.yaml must differ from config.yaml only in paths: a prompt version set in one but
     not the other made a Kaggle dev run use orchestrator prompt o1 instead of o2 (P2-06)."""
@@ -250,4 +304,3 @@ def test_kaggle_config_matches_config_except_paths():
     assert set(a) == set(b)
     differ = {k for k in a if a[k] != b[k]}
     assert differ <= path_keys, sorted(differ - path_keys)
-

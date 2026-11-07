@@ -13,7 +13,8 @@ import jsonschema
 from src.contracts import RelevanceRequest, RelevanceResponse, validate
 from src.obs.trace import NullTrace
 
-PROMPT_VERSION = "v1"
+PROMPT_VERSION = "v1"          # Phase 1 prompt; the default
+PROMPT_VERSION_V2 = "v2"       # calibrated scale with anchors (P2-07)
 
 PROMPT_TEMPLATE = """You help decide which regression tests to run for a code change.
 Rate how likely it is that the test class below exercises the changed code,
@@ -33,6 +34,37 @@ Answer with a single JSON object and nothing else:
 {{"test": "{test}", "relevance": <number from 0 to 1>, "reason": "<one short sentence>", "confidence": <number from 0 to 1>}}
 relevance: 0 = unrelated, 1 = directly tests the changed code.
 confidence: how sure you are of the relevance value."""
+
+PROMPT_TEMPLATE_V2 = """You help decide which regression tests to run for a code change.
+Rate how likely it is that the test class below exercises the changed code,
+so that it could fail because of this change.
+
+Code change (unified diff, may be truncated):
+<<<DIFF
+{diff}
+DIFF>>>
+
+Test class `{test}` (source, may be truncated):
+<<<TEST
+{source}
+TEST>>>
+
+Before deciding, compare the test with the change:
+- the test's package name with the package folders of the changed file paths;
+- the test's imports with the changed classes and packages;
+- the class, method and field names the test uses with the identifiers in the changed lines.
+
+Use this scale for relevance (values between the anchors are allowed):
+- 0.0 = the test is in an unrelated module;
+- 0.3 = same subsystem, but different functionality;
+- 0.6 = the test uses a class or package that the change touches;
+- 0.9 = the test directly tests a changed class or method.
+
+Answer with a single JSON object and nothing else:
+{{"test": "{test}", "relevance": <number from 0 to 1>, "reason": "<one short sentence>", "confidence": <number from 0 to 1>}}
+confidence: how sure you are of the relevance value."""
+
+TEMPLATES = {PROMPT_VERSION: PROMPT_TEMPLATE, PROMPT_VERSION_V2: PROMPT_TEMPLATE_V2}
 
 TRUNCATION_MARK = "\n[...truncated]"
 
@@ -72,18 +104,32 @@ def truncate(text, max_chars):
     return text[:max_chars] + TRUNCATION_MARK
 
 
-def make_request(build_id, test, diff_text, test_source, max_diff_chars, max_test_chars):
+def prompt_version_from_config(cfg):
+    """cfg["llm_p2"]["relevance_prompt_version"], default "v1"; an unknown version is an error."""
+    version = (cfg.get("llm_p2") or {}).get("relevance_prompt_version") or PROMPT_VERSION
+    if version not in TEMPLATES:
+        raise ValueError(f"unknown relevance prompt version {version!r}; valid: {', '.join(TEMPLATES)}")
+    return version
+
+
+def make_request(build_id, test, diff_text, test_source, max_diff_chars, max_test_chars,
+                 prompt_version=PROMPT_VERSION):
+    """Anonymised, truncated request; prompt_version selects the template and is recorded."""
+    if prompt_version not in TEMPLATES:
+        raise ValueError(f"unknown relevance prompt version {prompt_version!r}; valid: {', '.join(TEMPLATES)}")
     return RelevanceRequest(
         build_id=build_id,
         test=test,
         diff_chunk=truncate(anonymise(diff_text), max_diff_chars),
         test_source=truncate(anonymise(test_source), max_test_chars),
-        prompt_version=PROMPT_VERSION,
+        prompt_version=prompt_version,
     )
 
 
-def build_prompt(request):
-    return PROMPT_TEMPLATE.format(diff=request.diff_chunk, test=request.test, source=request.test_source)
+def build_prompt(request, prompt_version=None):
+    """The prompt of the request's version (or of prompt_version, if given)."""
+    template = TEMPLATES[prompt_version or request.prompt_version or PROMPT_VERSION]
+    return template.format(diff=request.diff_chunk, test=request.test, source=request.test_source)
 
 
 def parse_response(text, expected_test):

@@ -1,6 +1,6 @@
 # Statistics (test split)
 
-Input: 11 per_build.csv file(s). Metrics are averaged over seeds per build first. Wilcoxon signed-rank (two-sided), Holm correction within each family (comparison × metric × budget), α = 0.05. Effect size r = matched-pairs rank-biserial correlation (positive = target better). Friedman mean rank 1 = best.
+Input: 13 per_build.csv file(s). Metrics are averaged over seeds per build first. Wilcoxon signed-rank (two-sided), Holm correction within each family (comparison × metric × budget), α = 0.05. Effect size r = matched-pairs rank-biserial correlation (positive = target better). Friedman mean rank 1 = best.
 
 ## RQ1: LLM-relevance vs others
 
@@ -162,6 +162,12 @@ Input: 11 per_build.csv file(s). Metrics are averaged over seeds per build first
 | Full system | 10% | sapfdc | 1;2;3 | 0.274 | 0.000 |
 | Full system | 20% | dtc | 1;2;3 | 0.560 | 0.013 |
 | Full system | 20% | sapfdc | 1;2;3 | 0.392 | 0.007 |
+| Full system (no shortlist) | 5% | dtc | 1;2;3 | 0.338 | 0.000 |
+| Full system (no shortlist) | 5% | sapfdc | 1;2;3 | 0.246 | 0.000 |
+| Full system (no shortlist) | 10% | dtc | 1;2;3 | 0.441 | 0.000 |
+| Full system (no shortlist) | 10% | sapfdc | 1;2;3 | 0.281 | 0.000 |
+| Full system (no shortlist) | 20% | dtc | 1;2;3 | 0.538 | 0.013 |
+| Full system (no shortlist) | 20% | sapfdc | 1;2;3 | 0.392 | 0.006 |
 | History-only | 5% | dtc | 1;2;3 | 0.282 | 0.000 |
 | History-only | 5% | sapfdc | 1;2;3 | 0.163 | 0.000 |
 | History-only | 10% | dtc | 1;2;3 | 0.398 | 0.000 |

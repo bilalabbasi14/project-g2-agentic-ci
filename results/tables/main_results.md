@@ -40,6 +40,6 @@ Written by `python -m src.eval.report`. %DTC and SAPFDc: mean over builds of the
 | Agent-weighted (TF-IDF) | 5% | 3 | 44 | 0.283 ± 0.000 | 0.227 ± 0.000 | 0.796 | 0.556 |
 | Agent-weighted (TF-IDF) | 10% | 3 | 44 | 0.356 ± 0.000 | 0.275 ± 0.000 | 0.796 | 0.521 |
 | Agent-weighted (TF-IDF) | 20% | 3 | 44 | 0.545 ± 0.000 | 0.373 ± 0.000 | 0.796 | 0.479 |
-| Full system (no shortlist) | 5% | 1 | 20 | 0.329 ± — | 0.283 ± — | 0.789 | 0.529 |
-| Full system (no shortlist) | 10% | 1 | 20 | 0.442 ± — | 0.338 ± — | 0.789 | 0.513 |
-| Full system (no shortlist) | 20% | 1 | 20 | 0.504 ± — | 0.422 ± — | 0.789 | 0.474 |
+| Full system (no shortlist) | 5% | 3 | 44 | 0.338 ± 0.000 | 0.246 ± 0.000 | 0.823 | 0.528 |
+| Full system (no shortlist) | 10% | 3 | 44 | 0.441 ± 0.000 | 0.281 ± 0.000 | 0.823 | 0.514 |
+| Full system (no shortlist) | 20% | 3 | 44 | 0.538 ± 0.013 | 0.392 ± 0.006 | 0.823 | 0.468 |

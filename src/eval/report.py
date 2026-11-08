@@ -482,7 +482,12 @@ def fig_dtc_by_method(main, path):
         sub = main[main["budget"] == b].set_index("method").reindex(methods)
         _bar(ax, x + (i - (len(budgets) - 1) / 2) * width, sub["dtc_mean"].fillna(0), STYLES[i], width=width,
              yerr=sub["dtc_std"].fillna(0), capsize=2, error_kw={"elinewidth": 0.8}, label=f"{b:.0%} budget")
-    labels = [m + ("*" if int(main.loc[main["method"] == m, "seeds"].iloc[0]) == 1 else "") for m in methods]
+    most = int(main["n_builds"].max())
+    labels = []
+    for m in methods:
+        r = main[main["method"] == m].iloc[0]
+        labels.append(m + ("*" if int(r["seeds"]) == 1 else "")
+                      + (f" ({int(r['n_builds'])} builds)" if int(r["n_builds"]) < most else ""))
     ax.set_xticks(x)
     ax.set_xticklabels(labels, rotation=40, ha="right", fontsize=8)
     ax.set_ylabel("%DTC (mean over builds)")

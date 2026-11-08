@@ -14,7 +14,7 @@ A copy of this file is kept in the repository at `docs/PROJECT_CONTEXT.md`. If t
 | Project code | G2-05 |
 | Title | Agentic Semantic Reasoning for Dynamic Test Selection in Long-Running CI Pipelines |
 | Group | Ahmad Bilal (23I-0787, group head), Muhammad Ali (23I-2565), Taha Bashir (23I-0824) |
-| Supervisor | Meemon Khan |
+| Supervisor | Memoona Khan |
 | Repository | https://github.com/bilalabbasi14/project-g2-agentic-ci (private) |
 | Phase 2 deadline | **Sunday 8 November 2026, 11:55 PM Pakistan time (PKT)** |
 

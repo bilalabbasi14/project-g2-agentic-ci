@@ -3,7 +3,7 @@
   "experiment": "E5_noshortlist",
   "split": "test",
   "seed": 1,
-  "git_commit": "45e4496f334eacdbef49e8c40be7ca86f9662b95",
+  "git_commit": "919cdf78cc60a1045b7c20a2ebccd324fd010df6",
   "model": "qwen2.5-coder:7b",
   "prompt_versions": {
     "relevance": "v1",
@@ -20,9 +20,9 @@
     0.2
   ],
   "config_file": "config_kaggle.yaml",
-  "started": "2026-11-07T17:51:15+00:00",
-  "finished": "2026-11-07T18:57:22+00:00",
-  "n_builds": 20,
+  "started": "2026-11-08T04:50:53+00:00",
+  "finished": "2026-11-08T06:08:05+00:00",
+  "n_builds": 44,
   "failed_builds": [],
   "host": "kaggle-t4x2",
   "provider": "ollama",

@@ -22,9 +22,9 @@ Written by `python -m src.eval.report`. Paired on the builds and seeds both meth
 | Agent-weighted | explainer | SAPFDc | 5% | 1;2;3 | 44 | 0.219 | 0.219 | 0.000 | — | — |
 | Agent-weighted | explainer | SAPFDc | 10% | 1;2;3 | 44 | 0.274 | 0.274 | 0.000 | — | — |
 | Agent-weighted | explainer | SAPFDc | 20% | 1;2;3 | 44 | 0.392 | 0.392 | 0.000 | — | — |
-| Full system (no shortlist) | shortlist | %DTC | 5% | 1 | 20 | 0.292 | 0.329 | 0.038 | — | — |
-| Full system (no shortlist) | shortlist | %DTC | 10% | 1 | 20 | 0.454 | 0.442 | -0.013 | — | — |
-| Full system (no shortlist) | shortlist | %DTC | 20% | 1 | 20 | 0.554 | 0.504 | -0.050 | — | — |
-| Full system (no shortlist) | shortlist | SAPFDc | 5% | 1 | 20 | 0.238 | 0.283 | 0.045 | — | — |
-| Full system (no shortlist) | shortlist | SAPFDc | 10% | 1 | 20 | 0.308 | 0.338 | 0.030 | — | — |
-| Full system (no shortlist) | shortlist | SAPFDc | 20% | 1 | 20 | 0.416 | 0.422 | 0.006 | — | — |
+| Full system (no shortlist) | shortlist | %DTC | 5% | 1;2;3 | 44 | 0.306 | 0.338 | 0.032 | — | — |
+| Full system (no shortlist) | shortlist | %DTC | 10% | 1;2;3 | 44 | 0.424 | 0.441 | 0.017 | — | — |
+| Full system (no shortlist) | shortlist | %DTC | 20% | 1;2;3 | 44 | 0.560 | 0.538 | -0.022 | — | — |
+| Full system (no shortlist) | shortlist | SAPFDc | 5% | 1;2;3 | 44 | 0.219 | 0.246 | 0.028 | — | — |
+| Full system (no shortlist) | shortlist | SAPFDc | 10% | 1;2;3 | 44 | 0.274 | 0.281 | 0.008 | — | — |
+| Full system (no shortlist) | shortlist | SAPFDc | 20% | 1;2;3 | 44 | 0.392 | 0.392 | 0.000 | — | — |

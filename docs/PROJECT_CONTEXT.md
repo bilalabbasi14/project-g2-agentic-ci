@@ -160,7 +160,7 @@ Every method below is described by a **MethodSpec** (defined in P2-03) so the pi
 | `Agent-weighted` | llm_shortlist | **orchestrator chooses w per build** | off | **Gap 3 component** (E4) |
 | `Full system` | llm_shortlist | orchestrator | **on** | Complete agentic system (E3); explainer = **Gap 2 component** |
 | `Agent-weighted (TF-IDF)` | tfidf | orchestrator | off | Ablation: full system without LLM relevance (E5) |
-| `Full system (no shortlist)` | llm_all_individual | orchestrator | off | Ablation: LLM scores every candidate (E5, 20-build sample, seed 1) |
+| `Full system (no shortlist)` | llm_all_individual | orchestrator | off | Ablation: LLM scores every candidate (E5, all 44 test builds, seeds 1–3) |
 
 Relevance sources:
 - `none` — R = 0 for all tests.
@@ -256,7 +256,7 @@ All final results use the **test split** (all test-split builds, 44), budgets 5/
 | **E2** Base paper | DANTE reproduced and compared with stored outputs | `DANTE-CCH`, `DANTE-CCH-shipped` on the test split; plus `DANTE-CCH (stored)` vs our port on the 50 Phase 1 builds | State clearly which numbers we reproduced and which come from the paper |
 | **E3** Proposed system | Full agentic system | `Full system` | Explainer only on seed 1 (it does not affect selection); seeds 2–3 run with the explainer off |
 | **E4** Gap-wise | One experiment per gap | Gap 1: `LLM-relevance` vs `DANTE-CCH` and `DANTE-CCH-shipped`. Gap 2: explainer cost vs time saved, plus 100 rated explanations. Gap 3: `Agent-weighted` vs `DANTE-CCH` vs `Tuned-weight (LLM)` | RQ1–RQ3 below |
-| **E5** Ablations | Contribution of each component | `LLM-relevance`, `Agent-weighted (TF-IDF)`, `Agent-weighted`, `Full system (no shortlist)` compared with `Full system` | No-shortlist ablation: 20 test builds, seed 1 (compute limit; stated in the paper) |
+| **E5** Ablations | Contribution of each component | `LLM-relevance`, `Agent-weighted (TF-IDF)`, `Agent-weighted`, `Full system (no shortlist)` compared with `Full system` | No-shortlist ablation: all 44 test builds, seeds 1–3 (P2-38; R3 first ran 20 builds with seed 1 before the deadline extension) |
 | **E6** Efficiency and reliability | Cost and robustness | All LLM methods | Latency per build, LLM calls, tokens, tool calls, fallback rate, time saved vs overhead, GPU-hours |
 
 **Research questions and success criteria (fixed in Phase 1, do not change):**

@@ -1,0 +1,13 @@
+metric,budget,method,source,n_builds,median,reference,median_diff_vs_reference,tolerance,builds_within_tolerance
+APFDc (full ranking),,"DANTE-CCH (replication package, RQ1 APFDc)",taken from the replication package,50,0.7183431069728095,,,,
+APFDc (full ranking),,DANTE-CCH-shipped,reproduced by us,50,0.726581650103904,"DANTE-CCH (replication package, RQ1 APFDc)",1.8456061844529525e-05,0.02,39.0
+APFDc (full ranking),,DANTE-CCH,reproduced by us,50,0.7218020825904776,"DANTE-CCH (replication package, RQ1 APFDc)",-5.551115123125783e-17,0.02,32.0
+%DTC,0.05,DANTE-CCH (stored),taken from the replication package (stored selections; %DTC computed by our code),50,0.29166666666666663,,,,
+%DTC,0.05,DANTE-CCH-shipped,reproduced by us,50,0.3333333333333333,DANTE-CCH (stored),0.0,0.0,45.0
+%DTC,0.05,DANTE-CCH,reproduced by us,50,0.3333333333333333,DANTE-CCH (stored),0.0,0.0,45.0
+%DTC,0.1,DANTE-CCH (stored),taken from the replication package (stored selections; %DTC computed by our code),50,0.3333333333333333,,,,
+%DTC,0.1,DANTE-CCH-shipped,reproduced by us,50,0.3333333333333333,DANTE-CCH (stored),0.0,0.0,45.0
+%DTC,0.1,DANTE-CCH,reproduced by us,50,0.3666666666666667,DANTE-CCH (stored),0.0,0.0,43.0
+%DTC,0.2,DANTE-CCH (stored),taken from the replication package (stored selections; %DTC computed by our code),50,0.5,,,,
+%DTC,0.2,DANTE-CCH-shipped,reproduced by us,50,0.5,DANTE-CCH (stored),0.0,0.0,46.0
+%DTC,0.2,DANTE-CCH,reproduced by us,50,0.5,DANTE-CCH (stored),0.0,0.0,43.0

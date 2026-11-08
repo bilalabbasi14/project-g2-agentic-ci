@@ -1,0 +1,4 @@
+relevance_source,methods,runs,decisions,w_min,w_q1,w_median,w_q3,w_max,w_mean,distinct_w,share_w_dante,fallback_share
+llm_shortlist,"Agent-weighted, Full system",3,132,0.2,0.3,0.7,0.7,0.8,0.509090909090909,4,0.0,0.0
+llm_all_individual,Full system (no shortlist),1,20,0.2,0.2,0.3,0.7,0.8,0.4549999999999999,4,0.0,0.0
+tfidf,Agent-weighted (TF-IDF),3,132,0.3,0.7,0.7,0.7,0.8,0.7181818181818184,3,0.0,0.0

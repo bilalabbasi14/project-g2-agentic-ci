@@ -87,8 +87,8 @@ tuning:
   objective_budget: 0.10                   # maximise mean SAPFDc at this budget on the dev split
   tuned_weights_file: experiments/tuned_weights.yaml
 ablation:
-  no_shortlist_builds: 20                  # size of the test-split sample for the no-shortlist ablation
-  no_shortlist_seed: 1
+  no_shortlist_builds: 44                  # all test-split builds (P2-38; R3 ran the first 20 before the deadline extension)
+  no_shortlist_seeds: [1, 2, 3]
 trace:
   dir: /kaggle/working/logs/traces
   max_text_chars: 8000

@@ -156,7 +156,8 @@ def test_experiment_configs_load():
     for exp in ("E1", "E2", "E2_stored", "E3", "E5", "E5_noshortlist"):
         c = load_experiment(exp)
         assert c["split"] in ("test", "phase1") and load_method_specs(names=c["methods"])
-    assert load_experiment("E5_noshortlist")["build_limit"] == 20
+    ns = load_experiment("E5_noshortlist")
+    assert "build_limit" not in ns and ns["seeds"] == [1, 2, 3]     # all test builds (P2-38)
     assert load_experiment("DEV")["split"] == "dev"
     with pytest.raises(SystemExit):
         load_experiment("E9")

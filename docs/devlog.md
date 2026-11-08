@@ -166,7 +166,7 @@ In Phase 1 the LLM ran on a laptop CPU. The 13-build run made 156 calls with a m
 ### Measured effect
 
 - **Latency per relevance call:** 39.1 s on the laptop CPU (`results/initial_results.csv`) against 3.19 s on a T4 in the dev run with the chosen prompt (`results/dev/prompt_comparison.csv`, row `v1`, column `mean_latency_s`).
-- **Whole evaluation:** all ten test-split runs that call the model took 6.36 wall-clock hours on T4×2 in total, and the five dev-split runs 0.49 h (`results/tables/efficiency.md`).
+- **Whole evaluation:** all twelve test-split runs that call the model, including the full no-shortlist ablation of P2-38, took 11.02 wall-clock hours on T4×2 in total, and the five dev-split runs 0.49 h (`results/tables/efficiency.md`).
 
 ---
 

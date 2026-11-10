@@ -21,7 +21,10 @@ AI4015 Phase 2, group G2-05: an agentic layer on a local LLM (`qwen2.5-coder:7b`
   - the rated explanations (`results/gap2/`);
   - the failure analysis (`results/analysis/`, `docs/cases/`).
 - **Trace samples** (`logs_sample/`) and the development log (`docs/devlog.md`, built from `docs/devlog/`).
-- **Not included:** the LRTS data, the Karaf clone, the source and LLM caches, full traces and the per-build run JSONs. They are kept in private Kaggle datasets (see Installation).
+- **Not included:**
+  - the LRTS Karaf data, DANTE's stored results and the test-source cache: private Kaggle datasets shared with the group (see Installation);
+  - the Karaf clone: from the public Apache repository (`https://github.com/apache/karaf.git`);
+  - the LLM cache, the full traces and the per-build run JSONs: outputs of the Kaggle runs, kept outside the repository.
 
 ## How to reproduce
 

@@ -501,7 +501,7 @@ Author: Ahmad Bilal
 - **Phase 1 check (`E2_stored_phase1_seed1`, 50 builds):**
   - %DTC, `DANTE-CCH-shipped` vs `DANTE-CCH (stored)`: median difference 0.000, equal on 136 of 150 build-budget pairs.
   - Full-ranking APFDc, `DANTE-CCH-shipped` vs `rq1_dante_cch_apfdc` in `data_eval/eval_builds.csv`: median difference +0.0000, within 0.02 on 39 of 50 builds.
-  - The median criterion holds. Phase 1 reported 45 of 50 builds within 0.02; the reason for the difference was not found (tie-breaking, #58, is one possibility, not checked).
+  - The median criterion holds. Phase 1 reported 45 of 50 builds within 0.02; the reason for the difference was not found (tie-breaking is one possibility, not checked).
 
 ### What went wrong
 

@@ -1,9 +1,5 @@
 # Project Context — G2-05 Phase 2
 
-**Read this whole file before starting any task.** It explains what the project is, what already exists, what Phase 2 must deliver, and the rules everyone follows. A GitHub issue tells you *what to build*; this file tells you *why it exists and how it fits with everything else*. If an issue and this file disagree, stop and ask the issue's reviewer (Ali or Bilal) instead of guessing.
-
-A copy of this file is kept in the repository at `docs/PROJECT_CONTEXT.md`. If the copy in the repo is newer than the one you were sent, the repo copy wins.
-
 ---
 
 ## 1. The project in plain words
@@ -16,7 +12,6 @@ A copy of this file is kept in the repository at `docs/PROJECT_CONTEXT.md`. If t
 | Group | Ahmad Bilal (23I-0787, group head), Muhammad Ali (23I-2565), Taha Bashir (23I-0824) |
 | Supervisor | Memoona Khan |
 | Repository | https://github.com/bilalabbasi14/project-g2-agentic-ci (private) |
-| Phase 2 deadline | **Sunday 8 November 2026, 11:55 PM Pakistan time (PKT)** |
 
 **The problem.** Large software projects run thousands of automated tests every time code changes. This is called *continuous integration* (CI). For some projects a full test run takes hours. *Test selection* means picking a subset of tests to run within a time limit (a *budget*, for example "10% of the full test time") while still catching as many failing tests as possible.
 
@@ -49,7 +44,7 @@ It then ranks tests by a value score and picks tests in rank order until the tim
 | **History score** | DANTE's history signal for one test (see §5.1). |
 | **TF-IDF relevance** | DANTE's relevance signal, between 0 and 1. |
 | **LLM relevance** | Our Gap 1 signal: a number between 0 and 1 returned by the LLM for one test. |
-| **Shortlist** | The tests we send to the LLM: the top 10 by history score together with the top 10 by TF-IDF relevance (union, 13–20 tests). Tests not on the shortlist get LLM relevance 0. |
+| **Shortlist** | The tests we send to the LLM: the top 10 by history score together with the top 10 by TF-IDF relevance (union, at most 20 tests; 18.3 on average on the test split, `results/analysis/shortlist_recall_test.md`). Tests not on the shortlist get LLM relevance 0. |
 | **w (weight)** | The share given to history when combining signals: `base = w·History + (1−w)·Relevance^1.2`. DANTE's fixed rule is equivalent to **w = 2/3**. |
 | **Fallback** | When an LLM call times out, returns invalid output or reports low confidence, the system uses the safe DANTE behaviour instead and logs a `FallbackRecord`. |
 | **%DTC** | Share of the build's failing tests that the selection caught (0–1). Higher is better. |
@@ -65,7 +60,7 @@ It then ranks tests by a value score and picks tests in rank order until the tim
 
 ## 3. What already exists (Phase 1, on `main`)
 
-All of this works and has tests. **Do not rewrite it.** Phase 2 extends it.
+All of this works and has tests. Phase 2 extends it.
 
 | Path | What it does | Phase 1 owner |
 |---|---|---|
@@ -88,7 +83,7 @@ All of this works and has tests. **Do not rewrite it.** Phase 2 extends it.
 | `tests/` | 69 tests. All pass with `python -m pytest` and need **no data and no model**. | all |
 | `docs/` | `architecture.md`, `contracts.md`, `dante_notes.md` (differences between DANTE's paper and its shipped code). | Bilal, Ali |
 
-**Phase 1 findings everyone must know:**
+**Phase 1 findings:**
 
 1. In DANTE's shipped code, relevance is stored under the key `"tfidf"` but read under `"bm25"`, so the shipped DANTE effectively ranks on **history only**. We therefore report two DANTE variants: `DANTE-CCH` (TF-IDF on, as the paper describes) and `DANTE-CCH-shipped` (relevance weight 0, as the code behaves).
 2. Our DANTE port reproduces the stored median APFDc (difference +0.0000, within 0.02 on 45 of 50 builds) and median %DTC (difference 0.000) on the 50 stored builds.
@@ -279,14 +274,13 @@ All final results use the **test split** (all test-split builds, 44), budgets 5/
 
 ## 9. Repository layout after Phase 2
 
-New or changed paths are marked ★. **Owner** = who is responsible for changes to that file during Phase 2. Do not edit a file owned by someone else unless your issue explicitly says so; otherwise ask them first.
+New or changed paths are marked ★. **Owner** = who is responsible for changes to that file during Phase 2.
 
 ```
 .github/workflows/tests.yml        ★ CI: runs pytest on every PR                     Ali
 .github/pull_request_template.md   ★ PR checklist                                     Ali
 .githooks/pre-push                 ★ blocks direct pushes to main                     Ali
 .env.example                       ★ environment variables (no real values)           Ali
-CLAUDE.md                          ★ review rules for Claude Code reviewers           Ali
 config.yaml                        Phase 2 keys added once in P2-03                   Ali (others: request changes in your PR description)
 config_kaggle.yaml                 ★ same keys, Kaggle paths                          Ali
 requirements.txt                   Phase 2 additions in P2-03 only                    Ali
@@ -380,25 +374,16 @@ README.md                          final rewrite in P2-20                       
    git pull
    git checkout -b p2-06-orchestrator
    ```
-5. Commit in small, meaningful steps. A commit message is one short summary line in the imperative ("Add orchestrator tool loop"), then a blank line and a few lines on what and why. **Commit messages and PR descriptions must not contain `Co-authored-by` lines or "Generated with ..." lines.**
+5. Commit in small, meaningful steps. A commit message is one short summary line in the imperative ("Add orchestrator tool loop"), then a blank line and a few lines on what and why.
 6. Before opening the PR: `git fetch origin`, then `git rebase origin/main` (or merge `main` into your branch) and fix any conflicts; run `python -m pytest`; all tests must pass.
 7. Push the branch: `git push -u origin p2-06-orchestrator`.
 8. Open a PR into `main`. The title is `[P2-06] <issue title>`. The description follows the template: `Closes #<issue number>`, what changed, how it was tested, the acceptance criteria ticked one by one, known limitations, and a devlog entry if the issue asks for one.
-9. A reviewer (Ali or Bilal; never the author) reviews. **The reviewer who approves the PR merges it** (Ali or Bilal; nobody merges their own PR), only when the user explicitly says "merge PR #N", only if the user is not the PR's author, and only after an approval from someone other than the author and green CI.
+9. A reviewer (Ali or Bilal; never the author) reviews. **The reviewer who approves the PR merges it** (Ali or Bilal; nobody merges their own PR), only after an approval from someone other than the author and green CI.
 10. After the merge: `git checkout main`, then `git pull`, then delete your local branch.
 
 ---
 
-## 12. Scope discipline
-
-- Do exactly what your issue says. If you find something missing, wrong or unclear, **do not silently expand your task.** Write it in the PR description under "Problems found", or comment on the issue, and suggest a new issue. A new issue is created only after Ali approves.
-- Do not change another member's files unless your issue says so. If you must, explain why in the PR and tag the owner.
-- If a dependency (an issue you rely on) is not merged yet, either work against the interface defined in P2-03 using a fake, or wait. Do not copy someone else's unmerged code into your branch.
-- If you cannot meet an acceptance criterion, say so in the PR. Do not tick a box that is not true.
-
----
-
-## 13. Work order (stages)
+## 12. Work order (stages)
 
 Taha travels on 7 November, so his four code issues come first; Ali then finishes his open PRs and Kaggle steps and does the runs; Bilal follows. The rows below run one after another, top to bottom, and within a row in the order listed; rows for different members in the same step can run in parallel. **Every issue comes after all issues in its "Depends on" line** (checked issue by issue). Where an issue depends on unmerged work by the same member, its branch is stacked on that work and its PR says "Stacked on #<PR>; merge after it."
 
@@ -414,11 +399,11 @@ Taha travels on 7 November, so his four code issues come first; Ali then finishe
 | **6. README** | Ali | #20 P2-20 | Bilal |
 | **7. Final** | everyone | paper (written by the members, not AI): #27 (Ali), #28 (Bilal), #29 (Taha); release #26 P2-26 (Bilal) last | — |
 
-Submission deadline is unchanged: Sun 8 Nov, Bilal submits before 23:55 PKT.
+Submission deadline: Tue 10 Nov (extended from Sun 8 Nov); Bilal submits before 23:55 PKT.
 
 ---
 
-## 14. Who does what (summary)
+## 13. Who does what (summary)
 
 | Member | Code issues | Runs and human tasks | Paper sections (written by the member) |
 |---|---|---|---|
